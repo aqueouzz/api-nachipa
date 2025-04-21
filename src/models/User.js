@@ -5,44 +5,48 @@ import jwt from "jsonwebtoken";
 const userSchema = new mongoose.Schema({
   run: {
     type: String,
-    required: true,
+    required: [true, "Ingresar run"],
     trim: true,
     unique: true,
   },
   username: {
     type: String,
-    required: true,
+    required: [true, "Ingresar username"],
     trim: true,
     unique: true,
   },
   firstName: {
     type: String,
-    required: true,
+    required: [true, "Ingresar nombres"],
     trim: true,
   },
   lastName: {
     type: String,
-    required: true,
+    required: [true, "Ingresar apellidos"],
     trim: true,
   },
   birthDate: {
     type: Date,
-    required: true,
+    required: [true, "Ingresar fecha de nacimiento"],
   },
   email: {
     type: String,
-    required: true,
+    required: [true, "Ingresar email"],
+    match: [
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        "Ingresar correo valido",
+      ],
     trim: true,
     unique: true,
   },
   direction: {
     type: String,
-    required: true,
+    required: [true, "Ingresar direccion"],
     trim: true,
   },
   phone: {
     type: String,
-    required: true,
+    required: [true, "Ingresar fono"],
     trim: true,
   },
   businessID: {
@@ -72,7 +76,8 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
+    required: [true, "Ingresar clave"],
+    minlength: 6,
     trim: true,
   },
   state : {
@@ -84,7 +89,15 @@ const userSchema = new mongoose.Schema({
     type: [String],
     enum: ["omi", "equipment"],
     default: ["app1"],
-  }
+  },
+  token : {
+    type: String,
+  },
+  confirmed : {
+    type: Boolean,
+    default: false,
+  },
+
 
 }, { timestamps: true });
 
