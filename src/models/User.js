@@ -98,7 +98,7 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  photoPerfil :{
+  photoProfile :{
     type: String,
     
   }

@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 
+
 //Create a new user
 export const registerUser = async (req, res) => {
   try {
@@ -24,6 +25,8 @@ export const registerUser = async (req, res) => {
         console.log(error.message)
   }
 };
+
+
 
 //Sign in account
 export const signIn = async (req, res) => {};
