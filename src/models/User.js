@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const userSchema = new mongoose.Schema({
   run: {
     type: String,
     required: [true, "Ingresar run"],
+    maxlength: 10,
     trim: true,
     unique: true,
   },
@@ -18,12 +19,12 @@ const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
     required: [true, "Ingresar nombres"],
-    trim: true,
+ 
   },
   lastName: {
     type: String,
     required: [true, "Ingresar apellidos"],
-    trim: true,
+   
   },
   birthDate: {
     type: Date,
@@ -88,7 +89,7 @@ const userSchema = new mongoose.Schema({
   accessAplications : {
     type: [String],
     enum: ["omi", "equipment"],
-    default: ["app1"],
+    default: ["omi"],
   },
   token : {
     type: String,

@@ -13,6 +13,18 @@ git log --oneline
 git branch // Saber en que rama estoy parado
 git branch --show-current // comando mas limpio (solo la actual)
 
+Tips Commits :
+    Tipo	Uso
+    feat	Nueva funcionalidad
+    fix	Corrección de bugs
+    docs	Cambios en documentación
+    style	Cambios de formato (espacios, comas, sin tocar la lógica)
+    refactor	Reestructuración del código sin cambiar funcionalidad
+    test	Agrega o modifica tests
+    chore	Cambios menores (builds, deps, configs)
+
+    
+
 git checkout -b features/users-endpoint
 
 # RAMA DEVELOP

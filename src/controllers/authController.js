@@ -1,32 +1,32 @@
-import User from '../models/User.js';
-
+import User from "../models/User.js";
 
 //Create a new user
 export const registerUser = async (req, res) => {
+  try {
+    const user = new User(req.body);
+    const token = user.createToken();
 
-}
+    user.token = token;
+    await user.save();
+    res
+      .status(201)
+      .json({ success: true, message: "User created", user: user });
+  } catch (error) {
+        console.log(error.message)
+  }
+};
 
 //Sign in account
-export const signIn = async (req, res) => {
-
-}
+export const signIn = async (req, res) => {};
 
 //Confimation account
-export const confirmationAccount = async (req, res) => {
-
-}
+export const confirmationAccount = async (req, res) => {};
 
 //Forgot password
-export const forgotPassword = async (req, res) => {
-
-}
+export const forgotPassword = async (req, res) => {};
 
 //Reset password
-export const resetPassword = async (req, res) => {
-
-}
+export const resetPassword = async (req, res) => {};
 
 //Sign out account
-export const signOut = async (req, res) => {
-
-}
+export const signOut = async (req, res) => {};
