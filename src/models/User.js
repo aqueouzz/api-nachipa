@@ -101,4 +101,27 @@ const userSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
+//Hash password
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+});
+
+//Validate password
+userSchema.methods.validatePassword = async function (password) {
+  const isMatch = await bcrypt.compare(password, this.password);
+  return isMatch;
+};
+
+
+//Create token
+userSchema.methods.createToken = function () {
+  const token = jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_LIFETIME,
+  });
+  this.token = token;
+  return token;
+};
+
 export default mongoose.model("User", userSchema);
