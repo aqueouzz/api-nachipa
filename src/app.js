@@ -1,14 +1,19 @@
 import express from 'express'
 import morgan from 'morgan'
 
-import authRoutes from './routes/authRoutes.js'
-
-
 const app = express()
 
 app.use(express.json())
 app.use(morgan("tiny"));
+app.use('/uploads',express.static('src/uploads'))
 
+
+// Importing routes
+import authRoutes from './routes/authRoutes.js'
+
+//importing midedleware
+
+//Route default
 app.get('/api-nachipa/v1',(req,res)=> {
     res.send('Hello from the server-api Nachipa!')
 })

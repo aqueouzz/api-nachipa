@@ -5,8 +5,17 @@ export const registerUser = async (req, res) => {
   try {
     const user = new User(req.body);
     const token = user.createToken();
-
     user.token = token;
+
+    //Check file photo
+    if(!req.file){
+        return res.status(400).json({success: false, message: "Please upload a photo"})
+    }
+
+    const photoUrl =  `/uploads/${req.file.filename}`;
+
+    user.photoProfile = photoUrl;
+
     await user.save();
     res
       .status(201)
