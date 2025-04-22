@@ -2,9 +2,10 @@ import express from 'express';
 const router = express.Router();
 
 import { registerUser } from '../controllers/authController.js';
-import upload from '../middlewares/upload.js';
+import { validateRegisterInput } from '../middlewares/validationMiddleware.js';
+import multer from '../middlewares/multerMiddleware.js';
 
-router.route('/register').post(upload.single('photoProfile'),registerUser);
+router.route('/register').post(multer.single('photoProfile'),validateRegisterInput,registerUser);
 
 
 export default router;

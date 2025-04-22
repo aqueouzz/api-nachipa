@@ -1,37 +1,29 @@
 import User from "../models/User.js";
-
+import { StatusCodes } from "http-status-codes";
 
 //Create a new user
-export const registerUser = async (req, res) => {
-  try {
-    const user = new User(req.body);
-    const token = user.createToken();
-    user.token = token;
+export const registerUser = async (req, res, next) => {
+  const user = new User(req.body);
+  const token = user.createToken();
 
-    //Check file photo
-    if(!req.file){
-        return res.status(400).json({success: false, message: "Please upload a photo"})
-    }
+  user.token = token;
 
-    const photoUrl =  `/uploads/${req.file.filename}`;
-
-    user.photoProfile = photoUrl;
-
-    await user.save();
-    res
-      .status(201)
-      .json({ success: true, message: "User created", user: user });
-  } catch (error) {
-        console.log(error.message)
-        res.status(500).json({
-            success: false,
-            message: "Error creating user",
-            error: error.message,
-        });
+  //Check file photo
+  if (!req.file) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Please upload a photo" });
   }
+
+  const photoUrl = `/uploads/${req.file.filename}`;
+
+  user.photoProfile = photoUrl;
+
+  await user.save();
+  res
+    .status(StatusCodes.CREATED)
+    .json({ success: true, message: "User created", user: user });
 };
-
-
 
 //Sign in account
 export const signIn = async (req, res) => {};
