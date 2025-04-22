@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import { StatusCodes } from "http-status-codes";
+import { emailRegister } from "../utils/email.js";
 
 //Create a new user
 export const registerUser = async (req, res, next) => {
@@ -16,13 +17,20 @@ export const registerUser = async (req, res, next) => {
   }
 
   const photoUrl = `/uploads/${req.file.filename}`;
-
   user.photoProfile = photoUrl;
 
   await user.save();
+  emailRegister({
+    email : user.email,
+    firstName : user.firstName,
+    token : token
+  })
+
+
+
   res
     .status(StatusCodes.CREATED)
-    .json({ success: true, message: "User created", user: user });
+    .json({ success: true, message: "User created", user: user,token });
 };
 
 //Sign in account
