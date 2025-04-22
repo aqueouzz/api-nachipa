@@ -32,8 +32,6 @@ const withValidationErrors = (validateValues) => {
 // Validate user register input
 export const validateRegisterInput = withValidationErrors([
   body("run")
-    .notEmpty()
-    .withMessage("run is required")
     .custom(async (run) => {
       const rut = await User.findOne({ run });
       if (rut) {
@@ -51,7 +49,6 @@ export const validateRegisterInput = withValidationErrors([
     }),
   body("firstName").notEmpty().withMessage("firstName is required"),
   body("lastName").notEmpty().withMessage("lastName is required"),
-  body("birthDate").notEmpty().withMessage("birthDate is required"),
   body("email")
     .notEmpty()
     .withMessage("email is required")
@@ -63,25 +60,11 @@ export const validateRegisterInput = withValidationErrors([
         throw new BadRequestError("email already exists");
       }
     }),
-  body("direction").notEmpty().withMessage("direction is required"),
-  body("phone").notEmpty().withMessage("phone is required"),
-  body("businessID").notEmpty().withMessage("businessID is required"),
-  body("ubicationID").notEmpty().withMessage("ubicationID is required"),
-  body("areaID").notEmpty().withMessage("areaID is required"),
-  body("professionalDegreeID")
-    .notEmpty()
-    .withMessage("professionalDegreeID is required"),
-  body("rol").notEmpty().withMessage("rol is required"),
-  body("internalRol").notEmpty().withMessage("internalRol is required"),
   body("password")
     .notEmpty()
     .withMessage("password is required")
     .isLength({ min: 8 })
     .withMessage("password must be at least 8 characters long"),
-  body("state").notEmpty().withMessage("state is required"),
-  body("accessAplications")
-    .notEmpty()
-    .withMessage("accessAplications is required"),
 ]);
 //Validate id param mongoDB
 export const validateIdParam = withValidationErrors([
