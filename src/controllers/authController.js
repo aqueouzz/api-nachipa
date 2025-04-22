@@ -23,6 +23,11 @@ export const registerUser = async (req, res) => {
       .json({ success: true, message: "User created", user: user });
   } catch (error) {
         console.log(error.message)
+        res.status(500).json({
+            success: false,
+            message: "Error creating user",
+            error: error.message,
+        });
   }
 };
 

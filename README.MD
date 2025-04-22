@@ -25,7 +25,7 @@ Tips Commits :
 
     
 
-git checkout -b features/users-endpoint
+git checkout -b feature/users-endpoint
 
 # RAMA DEVELOP
 
