@@ -7,6 +7,8 @@ const app = express();
 app.use(express.json());
 app.use(morgan("tiny"));
 
+import 'express-async-errors';
+
 // Carpeta estática para ver los archivos subidos
 app.use("/uploads", express.static("src/uploads"));
 
@@ -33,6 +35,10 @@ app.post("/upload", upload.single("photo"), (req, res) => {
 import authRoutes from "./routes/authRoutes.js";
 
 //importing midedleware
+import errorHandlerMiddleware from './middlewares/error-handler.js';
+
+
+app.use(errorHandlerMiddleware);
 
 //Route default
 app.get("/api-nachipa/v1", (req, res) => {

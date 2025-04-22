@@ -5,6 +5,7 @@ import chalk from 'chalk';
 dotenv.config();
 
 
+
 const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {
