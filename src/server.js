@@ -1,10 +1,9 @@
+import 'express-async-errors';
 import app from './app.js';
 import db from './config/db.js';
 import dotenv from 'dotenv';
 import chalk from 'chalk';
 dotenv.config();
-
-
 
 const PORT = process.env.PORT || 3000;
 
