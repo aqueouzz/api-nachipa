@@ -83,7 +83,6 @@ export const validateRegisterInput = withValidationErrors([
     .notEmpty()
     .withMessage("accessAplications is required"),
 ]);
-
 //Validate id param mongoDB
 export const validateIdParam = withValidationErrors([
   param("id").custom(async (value, { req }) => {
