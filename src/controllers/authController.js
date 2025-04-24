@@ -160,10 +160,8 @@ export const requireToken = (req, res, next) => {
 
 //Sign out account
 export const signout = (req, res) => {
-  console.log(res);
   res.clearCookie("t");
   res.json({
     message: "Signout success",
   });
 };
-
