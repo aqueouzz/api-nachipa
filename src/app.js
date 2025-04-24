@@ -15,6 +15,7 @@ import errorHandlerMiddleware from './middlewares/errorHandlerMiddleware.js';
 
 // Importing routes
 import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 //Route default
 app.get("/api-nachipa/v1", (req, res) => {
@@ -23,6 +24,7 @@ app.get("/api-nachipa/v1", (req, res) => {
 
 // Routes API
 app.use("/api-nachipa/v1/auth", authRoutes);
+app.use("/api-nachipa/v1/user", userRoutes);
 
 app.use('*', (req, res) => {
   res.status(404).json({ msg: 'not found' });
