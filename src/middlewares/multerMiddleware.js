@@ -7,7 +7,7 @@ const storage = multer.diskStorage({
     cb(null, 'src/uploads/'); // La carpeta donde se guardará el archivo
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Asigna un nombre único
+    cb(null, (Date.now() + req.body.username) + path.extname(file.originalname)); // Asigna un nombre único
   }
 });
 
