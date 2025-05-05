@@ -1,5 +1,7 @@
 import User from "../models/User.js";
 import { StatusCodes } from "http-status-codes";
+import fs from "fs";
+import path from "path";
 import { emailRegister, resetPassword } from "../utils/email.js";
 import {
   UnauthenticatedError,
@@ -7,33 +9,51 @@ import {
   BadRequestError,
 } from "../error/errorResponse.js";
 
+
 //Create a new user
 export const registerUser = async (req, res, next) => {
-  const user = new User(req.body);
 
-  const token = user.createToken();
-  user.token = token;
+  try {
+    const user = new User(req.body);
+    const token = user.createToken();
+    user.token = token;
 
-  //Check file photo
-  if (!req.file) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Please upload a photo" });
+    if (req.file) {
+      // Asegúrate de que la carpeta uploads exista
+      const uploadDir = path.join("src/uploads");
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+
+      // Crear nombre único de archivo
+      const extension = path.extname(req.file.originalname);
+      const filename = `${Date.now()}-${user.username}${extension}`;
+      const filePath = path.join(uploadDir, filename);
+
+      // Guardar el archivo desde el buffer en disco
+      fs.writeFileSync(filePath, req.file.buffer);
+
+      // Asignar path accesible públicamente
+      user.photoProfile = `/uploads/${filename}`;
+    }
+
+    await user.save();
+
+    // Envío de email
+    emailRegister({
+      email: user.email,
+      firstName: user.firstName,
+      token: token,
+    });
+
+    res
+      .status(StatusCodes.CREATED)
+      .json({ success: true, message: "User created", user, token });
+
+  } catch (error) {
+    next(error);
   }
 
-  const photoUrl = `/uploads/${req.file.filename}`;
-  user.photoProfile = photoUrl;
-
-  await user.save();
-  emailRegister({
-    email: user.email,
-    firstName: user.firstName,
-    token: token,
-  });
-
-  res
-    .status(StatusCodes.CREATED)
-    .json({ success: true, message: "User created", user: user, token });
 };
 
 //Sign in account

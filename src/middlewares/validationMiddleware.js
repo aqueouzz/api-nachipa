@@ -4,7 +4,6 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "../error/errorResponse.js";
-import mongoose from "mongoose";
 import User from "../models/User.js";
 
 const withValidationErrors = (validateValues) => {
@@ -16,13 +15,13 @@ const withValidationErrors = (validateValues) => {
         const errorMessages = errors.array().map((error) => error.msg);
 
         const firstMessage = errorMessages[0];
-        console.log(Object.getPrototypeOf(firstMessage));
-        if (errorMessages[0].startsWith("no job")) {
-          throw new NotFoundError(errorMessages);
-        }
-        if (errorMessages[0].startsWith("not authorized")) {
-          throw new UnauthorizedError("not authorized to access this route");
-        }
+        // console.log(Object.getPrototypeOf(firstMessage));
+        // if (errorMessages[0].startsWith("no job")) {
+        //   throw new NotFoundError(errorMessages);
+        // }
+        // if (errorMessages[0].startsWith("not authorized")) {
+        //   throw new UnauthorizedError("not authorized to access this route");
+        // }
         throw new BadRequestError(errorMessages);
       }
       next();
@@ -32,15 +31,42 @@ const withValidationErrors = (validateValues) => {
 // Validate user register input
 export const validateRegisterInput = withValidationErrors([
   body("run")
+    .notEmpty()
+    .withMessage("User name is requerido por favor")
     .custom(async (run) => {
       const rut = await User.findOne({ run });
       if (rut) {
         throw new BadRequestError("run already exists");
       }
+
+      var Fn = {
+        // Valida el rut con su cadena completa "XXXXXXXX-X"
+        validaRut: function (rutCompleto) {
+          rutCompleto = rutCompleto.replace("‐", "-");
+          if (!/^[0-9]+[-|‐]{1}[0-9kK]{1}$/.test(rutCompleto)) return false;
+          var tmp = rutCompleto.split("-");
+          var digv = tmp[1];
+          var rut = tmp[0];
+          if (digv == "K") digv = "k";
+          console.log(rutCompleto);
+          return Fn.dv(rut) == digv;
+        },
+        dv: function (T) {
+          var M = 0,
+            S = 1;
+          for (; T; T = Math.floor(T / 10))
+            S = (S + (T % 10) * (9 - (M++ % 6))) % 11;
+          return S ? S - 1 : "k";
+        },
+      };
+
+      if (!Fn.validaRut(run)) {
+        throw new BadRequestError("Invalid run format");
+      }
     }),
   body("username")
     .notEmpty()
-    .withMessage("username is required")
+    .withMessage("User name is requerido por favor")
     .custom(async (username) => {
       const us = await User.findOne({ username });
       if (us) {
@@ -65,11 +91,9 @@ export const validateRegisterInput = withValidationErrors([
     .withMessage("password is required")
     .isLength({ min: 8 })
     .withMessage("password must be at least 8 characters long"),
-]);
-//Validate id param mongoDB
-export const validateIdParam = withValidationErrors([
-  param("id").custom(async (value, { req }) => {
-    const isValidMongoId = mongoose.Types.ObjectId.isValid(value);
-    if (!isValidMongoId) throw new BadRequestError("invalid MongoDB id");
-  }),
+  body("accessAplications")
+    .notEmpty()
+    .withMessage("accessAplications es requerido por favor")
+    .isIn(["omi", "equipment"])
+    .withMessage('Application must be omi || equipment'),
 ]);

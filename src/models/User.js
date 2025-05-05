@@ -9,15 +9,18 @@ const userSchema = new mongoose.Schema(
       maxlength: 10,
       trim: true,
       unique: true,
+      required: [true, "run es requerido... validacion desde el modelo"],
     },
     username: {
       type: String,
       trim: true,
       unique: true,
+      required: [true, "username es requerido... validacion desde el modelo"],
     },
     firstName: {
       type: String,
       trim: true,
+      required: [true, "firstName es requerido... validacion desde el modelo"],
     },
     lastName: {
       type: String,
@@ -28,6 +31,7 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
+      required: [true, "email es requerido... validacion desde el modelo"],
       match: [
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
         "Ingresar correo valido",
@@ -74,14 +78,13 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
     state: {
-      type: String,
-      enum: ["active", "inactive"],
-      default: "active",
+      type: Boolean,
     },
     accessAplications: {
       type: [String],
       enum: ["omi", "equipment"],
       default: ["omi"],
+      required: [true, "Aplicacion requerida... validacion desde el modelo"],
     },
     token: {
       type: String,
@@ -92,6 +95,7 @@ const userSchema = new mongoose.Schema(
     },
     photoProfile: {
       type: String,
+      required: false,
     },
   },
   { timestamps: true }

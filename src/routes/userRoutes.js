@@ -8,7 +8,7 @@ import {
   updateUser,
   deleteUser
 } from "../controllers/userController.js";
-import { validateIdParam } from "../middlewares/validationMiddleware.js";
+import { validateIdParam } from "../middlewares/validationsUserMiddleware.js";
 
 router.route("/").get(getAllUsers);
 router.route("/:id").get(validateIdParam, getById);
