@@ -1,10 +1,7 @@
 import { body, param, validationResult } from 'express-validator';
-import {
-  BadRequestError,
-  NotFoundError,
-  UnauthorizedError,
-} from '../error/errorResponse.js';
+import { BadRequestError } from '../error/errorResponse.js';
 import User from '../models/User.js';
+import Business from '../models/Business.js';
 
 const withValidationErrors = (validateValues) => {
   return [
@@ -95,4 +92,27 @@ export const validateRegisterInput = withValidationErrors([
     .withMessage('accessAplications es requerido por favor')
     .isIn(['omi', 'equipment'])
     .withMessage('Application must be omi || equipment'),
+]);
+
+// Validate business create input
+export const validateRegisterBusinessInput = withValidationErrors([
+  body('rut').notEmpty().withMessage('Rut es requerido'),
+  body('name').notEmpty().withMessage('Nombre es requerido'),
+  body('giro').notEmpty().withMessage('Giro es requerido'),
+  body('commune').notEmpty().withMessage('Comuna es requerido'),
+  body('city').notEmpty().withMessage('Ciudad es requerido'),
+  body('country').notEmpty().withMessage('Pais es requerido'),
+  body('phone').notEmpty().withMessage('Fono es requerido'),
+  body('email')
+    .notEmpty()
+    .withMessage('Email es requerido')
+    .isEmail()
+    .withMessage('Formato email invalido')
+    .custom(async (email) => {
+      const business = await Business.findOne({ email });
+      if (business) {
+        throw new BadRequestError('Correo ya existe');
+      }
+    }),
+  body('nameContact').notEmpty().withMessage('Nombre contacto es requerido'),
 ]);
