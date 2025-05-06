@@ -1,40 +1,67 @@
-import User from "../models/User.js";
-import { StatusCodes } from "http-status-codes";
-import fs from "fs";
-import path from "path";
-import { emailRegister, resetPassword } from "../utils/email.js";
+import User from '../models/User.js';
+import { StatusCodes } from 'http-status-codes';
+import fs from 'fs/promises';
+import path from 'path';
+import { emailRegister, resetPassword } from '../utils/email.js';
 import {
   UnauthenticatedError,
   UnauthorizedError,
   BadRequestError,
-} from "../error/errorResponse.js";
-
+} from '../error/errorResponse.js';
 
 //Create a new user
 export const registerUser = async (req, res, next) => {
-
   try {
     const user = new User(req.body);
     const token = user.createToken();
     user.token = token;
 
-    if (req.file) {
-      // Asegúrate de que la carpeta uploads exista
-      const uploadDir = path.join("src/uploads");
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
+    if (req.file === undefined) {
+      let imageDefault = path.join('src/uploads/user-default.png');
+      let newImageDefault = path.join(
+        `src/uploads/user-default-${user.username}.png`
+      );
 
-      // Crear nombre único de archivo
+      try {
+        // Crear nombre único de archivo
+        const buffer = await fs.readFile(imageDefault);
+
+        // console.log(buffer);
+        await fs.writeFile(newImageDefault, buffer);
+
+        user.photoProfile = newImageDefault.replace(/\\/g, '/');
+
+        // user.photoProfile = `/uploads/${filename}`;
+      } catch (err) {
+        console.error('Error al leer la imagen:', err);
+      }
+    }
+
+    if (req.file) {
+      const uploadDir = path.join('src/uploads');
       const extension = path.extname(req.file.originalname);
       const filename = `${Date.now()}-${user.username}${extension}`;
       const filePath = path.join(uploadDir, filename);
+      try {
+        await fs.mkdir(uploadDir, { recursive: true }); // No falla si ya existe
+      } catch (err) {
+        console.error('Error creando carpeta:', err);
+        return res.status(500).json({
+          success: false,
+          message: 'Error al crear carpeta de subida.',
+        });
+      }
 
       // Guardar el archivo desde el buffer en disco
-      fs.writeFileSync(filePath, req.file.buffer);
-
-      // Asignar path accesible públicamente
-      user.photoProfile = `/uploads/${filename}`;
+      try {
+        await fs.writeFile(filePath, req.file.buffer);
+        user.photoProfile = `/uploads/${filename}`;
+      } catch (err) {
+        console.error('Error al guardar archivo:', err);
+        return res
+          .status(500)
+          .json({ success: false, message: 'Error al guardar la imagen.' });
+      }
     }
 
     await user.save();
@@ -48,12 +75,10 @@ export const registerUser = async (req, res, next) => {
 
     res
       .status(StatusCodes.CREATED)
-      .json({ success: true, message: "User created", user, token });
-
+      .json({ success: true, message: 'User created', user, token });
   } catch (error) {
     next(error);
   }
-
 };
 
 //Sign in account
@@ -61,28 +86,28 @@ export const signIn = async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    throw new UnauthenticatedError("Please provide email and password");
+    throw new UnauthenticatedError('Please provide email and password');
   }
 
   const user = await User.findOne({ email });
 
   if (!user) {
-    throw new UnauthenticatedError("Correo no es valido");
+    throw new UnauthenticatedError('Correo no es valido');
   }
 
   if (!user.confirmed) {
-    throw new BadRequestError("No ha confirmado su cuenta");
+    throw new BadRequestError('No ha confirmado su cuenta');
   }
 
   const isPassword = await user.validatePassword(password);
 
   if (!isPassword) {
-    throw new UnauthenticatedError("Clave incorrecta!");
+    throw new UnauthenticatedError('Clave incorrecta!');
   }
 
   const token = user.createToken();
 
-  res.cookie("t", token, {
+  res.cookie('t', token, {
     expire: new Date() + 9999,
   });
 
@@ -96,24 +121,24 @@ export const confirmationAccount = async (req, res) => {
   const userConfirm = await User.findOne({ token });
 
   if (!userConfirm) {
-    throw new BadRequestError("Token no valido o expirado");
+    throw new BadRequestError('Token no valido o expirado');
   }
 
   const { email } = userConfirm;
   const user = await User.findOne({ email });
 
   if (!user) {
-    throw new BadRequestError("No existe el usuario");
+    throw new BadRequestError('No existe el usuario');
   }
 
   userConfirm.confirmed = true;
-  userConfirm.token = "";
+  userConfirm.token = '';
 
   await userConfirm.save();
 
   res
     .status(200)
-    .json({ success: true, message: "Cuenta confirmada correctamente" });
+    .json({ success: true, message: 'Cuenta confirmada correctamente' });
 };
 
 //Forgot password
@@ -124,7 +149,7 @@ export const forgotPassword = async (req, res) => {
   const user = await User.findOne({ email });
 
   if (!user) {
-    throw new BadRequestError("El usuario no existe");
+    throw new BadRequestError('El usuario no existe');
   }
 
   user.token = user.createToken();
@@ -139,7 +164,7 @@ export const forgotPassword = async (req, res) => {
 
   res.json({
     success: true,
-    message: "Hemos enviado un email para reestablecer tu clave",
+    message: 'Hemos enviado un email para reestablecer tu clave',
   });
 };
 //Reset password
@@ -150,12 +175,12 @@ export const newPassword = async (req, res) => {
   const user = await User.findOne({ token });
   if (user) {
     user.password = password;
-    user.token = "";
+    user.token = '';
 
     await user.save();
-    res.json({ msg: "Usuario modificado correctamente" });
+    res.json({ msg: 'Usuario modificado correctamente' });
   } else {
-    throw new BadRequestError("Token invalid");
+    throw new BadRequestError('Token invalid');
   }
 };
 
@@ -163,11 +188,11 @@ export const newPassword = async (req, res) => {
 export const requireToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    throw new ErrorResponse("Falta token de autorizacion");
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    throw new ErrorResponse('Falta token de autorizacion');
   }
 
-  const token = authHeader.split(" ")[1];
+  const token = authHeader.split(' ')[1];
 
   try {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
@@ -180,8 +205,8 @@ export const requireToken = (req, res, next) => {
 
 //Sign out account
 export const signout = (req, res) => {
-  res.clearCookie("t");
+  res.clearCookie('t');
   res.json({
-    message: "Signout success",
+    message: 'Signout success',
   });
 };

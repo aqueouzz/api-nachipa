@@ -1,24 +1,25 @@
-import nodemailer from "nodemailer";
+import nodemailer from 'nodemailer';
+import dns from 'dns/promises';
 
 export const emailRegister = async (data) => {
   const { email, firstName, token } = data;
 
   let transporter = nodemailer.createTransport({
-    service: "gmail",
+    service: 'gmail',
     auth: {
-      user: "fsoto@nachipa-w.com", // Cambia por tu email
-      pass: "nolo iwzh qczd dqnu", // Cambia por tu contraseña o usa una App Password
+      user: 'fsoto@nachipa-w.com', // Cambia por tu email
+      pass: 'nolo iwzh qczd dqnu', // Cambia por tu contraseña o usa una App Password
     },
   });
 
   //Informacion email
   // TODO: Modificar diseño de email
   await transporter.sendMail({
-    from: "Notificaciones de cuenta 👌 <no-responder@nachipa-w.com",
+    from: 'Notificaciones de cuenta 👌 <no-responder@nachipa-w.com',
     to: email,
-    subject: "Confirma tu cuenta email 💻",
-    text: "Comprueba tu cuenta",
-    replyTo: "no-responder@nachipa-w.com",
+    subject: 'Confirma tu cuenta email 💻',
+    text: 'Comprueba tu cuenta',
+    replyTo: 'no-responder@nachipa-w.com',
     html: `
                 <body
                   style="
@@ -57,21 +58,21 @@ export const resetPassword = async (data) => {
   const { email, firstName, token } = data;
 
   let transporter = nodemailer.createTransport({
-    service: "gmail",
+    service: 'gmail',
     auth: {
-      user: "fsoto@nachipa-w.com", // Cambia por tu email
-      pass: "nolo iwzh qczd dqnu", // Cambia por tu contraseña o usa una App Password
+      user: 'fsoto@nachipa-w.com', // Cambia por tu email
+      pass: 'nolo iwzh qczd dqnu', // Cambia por tu contraseña o usa una App Password
     },
   });
 
   //Informacion email
 
   await transporter.sendMail({
-    from: "Recupera tu clave 🔑 <no-responder@nachipa-w.com",
+    from: 'Recupera tu clave 🔑 <no-responder@nachipa-w.com',
     to: email,
-    subject: "Confirma tu cuenta email 💻",
-    text: "Comprueba tu cuenta",
-    replyTo: "no-responder@nachipa-w.com",
+    subject: 'Confirma tu cuenta email 💻',
+    text: 'Comprueba tu cuenta',
+    replyTo: 'no-responder@nachipa-w.com',
     html: `
     <p>Hola : ${firstName} has solicitado reestablecer tu password</p>
             <p>Sigue el siguiente enlace para generar un nuevo password : </p>
@@ -81,4 +82,14 @@ export const resetPassword = async (data) => {
     
     `,
   });
+};
+
+export const isDomainValid = async (email) => {
+  const domain = email.split('@')[1];
+  try {
+    const records = await dns.resolveMx(domain);
+    return records && records.length > 0;
+  } catch (e) {
+    return false;
+  }
 };
