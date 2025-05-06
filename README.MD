@@ -17,6 +17,9 @@ git log --oneline
 git branch // Saber en que rama estoy parado
 git branch --show-current // comando mas limpio (solo la actual)
 
+git remote add origin https://github.com/username/repo.git
+git push -u origin main
+
 Tips Commits :
     Tipo	Uso
     feat	Nueva funcionalidad
