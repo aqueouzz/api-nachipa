@@ -96,12 +96,56 @@ export const validateRegisterInput = withValidationErrors([
 
 // Validate business create input
 export const validateRegisterBusinessInput = withValidationErrors([
-  body('rut').notEmpty().withMessage('Rut es requerido'),
+  body('rut')
+    .notEmpty()
+    .withMessage('Rut es requerido')
+    .custom(async (run) => {
+      const rut = await User.findOne({ run });
+      if (rut) {
+        throw new BadRequestError('Rut ya existe');
+      }
+
+      var Fn = {
+        // Valida el rut con su cadena completa "XXXXXXXX-X"
+        validaRut: function (rutCompleto) {
+          rutCompleto = rutCompleto.replace('‐', '-');
+          if (!/^[0-9]+[-|‐]{1}[0-9kK]{1}$/.test(rutCompleto)) return false;
+          var tmp = rutCompleto.split('-');
+          var digv = tmp[1];
+          var rut = tmp[0];
+          if (digv == 'K') digv = 'k';
+          return Fn.dv(rut) == digv;
+        },
+        dv: function (T) {
+          var M = 0,
+            S = 1;
+          for (; T; T = Math.floor(T / 10))
+            S = (S + (T % 10) * (9 - (M++ % 6))) % 11;
+          return S ? S - 1 : 'k';
+        },
+      };
+
+      if (!Fn.validaRut(run)) {
+        throw new BadRequestError('Formato invalido de rut');
+      }
+    }),
   body('name').notEmpty().withMessage('Nombre es requerido'),
   body('giro').notEmpty().withMessage('Giro es requerido'),
-  body('commune').notEmpty().withMessage('Comuna es requerido'),
-  body('city').notEmpty().withMessage('Ciudad es requerido'),
-  body('country').notEmpty().withMessage('Pais es requerido'),
+  body('commune')
+    .notEmpty()
+    .withMessage('Comuna es requerido')
+    .isLength({ min: 2, max: 10 })
+    .withMessage('Comuna debe tener 2 a 8 caracteres'),
+  body('city')
+    .notEmpty()
+    .withMessage('Ciudad es requerido')
+    .isLength({ min: 2, max: 15 })
+    .withMessage('Ciudad debe tener 2 a 8 caracteres'),
+  body('country')
+    .notEmpty()
+    .withMessage('Pais es requerido')
+    .isLength({ min: 2, max: 15 })
+    .withMessage('Pais debe tener 2 a 8 caracteres'),
   body('phone').notEmpty().withMessage('Fono es requerido'),
   body('email')
     .notEmpty()

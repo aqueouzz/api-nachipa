@@ -12,6 +12,7 @@ const businessSchema = new mongoose.Schema(
     name: {
       type: String,
       trim: true,
+      maxlength: 12,
       unique: true,
       required: [true, 'Nombre empresa es requerido,desde modelo'],
     },
@@ -22,11 +23,13 @@ const businessSchema = new mongoose.Schema(
     },
     commune: {
       type: String,
+      maxlength: [12, 'Comuna excede maximo de caracteres'],
       required: [true, 'Comuna es requerido,desde modelo'],
       trim: true,
     },
     city: {
       type: String,
+      maxlength: 12,
       trim: true,
       required: [true, 'Ciudad es requerido,desde modelo'],
     },
@@ -34,11 +37,13 @@ const businessSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Pais es requerido,desde modelo'],
       trim: true,
+      maxlength: 10,
     },
-    phone: { type: String, trim: true },
+    phone: { type: String, trim: true, maxlength: 12 },
     email: {
       type: String,
       required: [true, 'Correo es requerido,desde modelo'],
+      lowercase: true,
       match: [
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
         'Ingresar correo valido',
@@ -50,6 +55,7 @@ const businessSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Nombre contacto es requerido,desde modelo'],
       trim: true,
+      maxlength: 12,
     },
     description: { type: String, trim: true },
   },

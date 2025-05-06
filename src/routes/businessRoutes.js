@@ -1,9 +1,23 @@
 import { Router } from 'express';
-import { createBusiness } from '../controllers/businessController.js';
+import {
+  createBusiness,
+  getAllBusiness,
+  getById,
+  updateBusiness,
+  deleteBusiness,
+} from '../controllers/businessController.js';
 import { validateRegisterBusinessInput } from '../middlewares/validationMiddleware.js';
+import { validateIdParam } from '../middlewares/validateIdParams.js';
 
-const route = Router();
+const router = Router();
 
-route.post('/', validateRegisterBusinessInput, createBusiness);
+router.get('/', getAllBusiness);
+router.post('/', validateRegisterBusinessInput, createBusiness);
+router
+  .route('/:id')
+  .all(validateIdParam)
+  .get(getById)
+  .patch(updateBusiness)
+  .delete(deleteBusiness);
 
-export default route;
+export default router;
