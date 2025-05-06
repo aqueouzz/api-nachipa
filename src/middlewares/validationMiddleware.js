@@ -2,6 +2,7 @@ import { body, param, validationResult } from 'express-validator';
 import { BadRequestError } from '../error/errorResponse.js';
 import User from '../models/User.js';
 import Business from '../models/Business.js';
+import mongoose from 'mongoose';
 
 const withValidationErrors = (validateValues) => {
   return [
@@ -82,6 +83,20 @@ export const validateRegisterInput = withValidationErrors([
         throw new BadRequestError('email already exists');
       }
     }),
+  body('businessID').custom(async (value, { req }) => {
+    // Validar si el ID tiene formato válido de ObjectId
+    const isValidMongoId = mongoose.Types.ObjectId.isValid(value);
+    if (!isValidMongoId) throw new BadRequestError('Invalid MongoDB id');
+
+    // Validar si existe en la base de datos
+    const idBusiness = await Business.findById(req.body.businessID);
+    if (!idBusiness) {
+      throw new BadRequestError('Empresa no existe');
+    }
+
+    // Si pasa ambas validaciones, todo bien
+    return true;
+  }),
   body('password')
     .notEmpty()
     .withMessage('password is required')
