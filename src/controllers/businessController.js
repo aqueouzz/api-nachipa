@@ -63,6 +63,7 @@ export const createBusiness = async (req, res, next) => {
     business,
   });
 };
+
 // Update a new Business
 export const updateBusiness = async (req, res) => {
   const { id } = req.params;
@@ -81,6 +82,7 @@ export const updateBusiness = async (req, res) => {
     business,
   });
 };
+
 // Deleted a Business
 export const deleteBusiness = async (req, res) => {
   const { id } = req.params;
