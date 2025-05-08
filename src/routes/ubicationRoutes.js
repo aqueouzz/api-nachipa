@@ -14,6 +14,6 @@ router
   .route('/:id')
   .get(getUbication)
   .delete(deleteUbication)
-  .put(updateUbication);
+  .patch(updateUbication);
 
 export default router;

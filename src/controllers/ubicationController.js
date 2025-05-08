@@ -39,6 +39,7 @@ export const getUbication = async (req, res) => {
 // Updated Ubication
 export const updateUbication = async (req, res) => {
   const { id } = req.params;
+
   const ubication = await Ubication.findByIdAndUpdate(id, req.body, {
     new: true,
     runValidators: true,
@@ -51,11 +52,11 @@ export const updateUbication = async (req, res) => {
   });
 };
 
-// Delete a new getAllUbication
+// Delete a new Ubication
 export const deleteUbication = async (req, res) => {
   const { id } = req.params;
 
-  const ubication = await Ubication.findByIdAndDelete(id);
+  await Ubication.findByIdAndDelete(id);
 
   res.status(StatusCodes.OK).json({
     success: true,
