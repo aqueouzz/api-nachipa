@@ -18,6 +18,7 @@ import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import businessRoutes from './routes/businessRoutes.js';
 import ubicationRoutes from './routes/ubicationRoutes.js';
+import rolRoutes from './routes/rolRoutes.js';
 
 //Route default
 app.get('/api-nachipa/v1', (req, res) => {
@@ -29,9 +30,10 @@ app.use('/api-nachipa/v1/auth', authRoutes);
 app.use('/api-nachipa/v1/user', userRoutes);
 app.use('/api-nachipa/v1/business', businessRoutes);
 app.use('/api-nachipa/v1/ubication', ubicationRoutes);
+app.use('/api-nachipa/v1/rol', rolRoutes);
 
 app.use('*', (req, res) => {
-  res.status(404).json({ msg: 'not found' });
+  res.status(404).json({ msg: 'routenot found' });
 });
 
 app.use(errorHandlerMiddleware);

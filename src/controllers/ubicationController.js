@@ -13,7 +13,7 @@ export const createUbication = async (req, res) => {
   });
 };
 
-// Gt AllUbication
+// Get AllUbication
 export const getAllUbication = async (req, res) => {
   const ubication = await Ubication.find();
 
