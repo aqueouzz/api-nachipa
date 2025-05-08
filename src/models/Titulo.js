@@ -28,6 +28,7 @@ const tituloSchema = new mongoose.Schema(
     },
     state: {
       type: Boolean,
+      default: true,
     },
   },
   {
