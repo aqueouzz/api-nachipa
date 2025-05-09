@@ -209,7 +209,14 @@
 
     * Tests básicos (si es posible)
 
-
+            Autenticación: Usa JWT para autenticar usuarios.
+            Autorización: Implementa roles para controlar el acceso a rutas específicas.
+            Seguridad adicional:
+            Usa express-rate-limit para limitar solicitudes.
+            Implementa protección contra CSRF si usas cookies.
+            Valida los datos de entrada con express-validator.
+            Configura CORS para restringir el acceso a tu API.
+            Si necesitas ayuda para implementar alguna de estas protecciones, ¡puedes pedírmelo! 😊
     
 
 ## 5. Lógica de Negocio (servicios)

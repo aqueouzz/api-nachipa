@@ -107,8 +107,13 @@ export const signIn = async (req, res) => {
 
   const token = user.createToken();
 
+  req.headers.authorization = `Bearer ${token}`;
+
   res.cookie('t', token, {
-    expire: new Date() + 9999,
+    httpOnly: true, // Protege contra XSS
+    secure: process.env.NODE_ENV === 'production', // Solo HTTPS en producción
+    sameSite: 'Strict', // Previene ataques CSRF
+    maxAge: 3600000, // 1 hora
   });
 
   res.status(201).json({ user: user.firstName, token: token });
@@ -164,7 +169,7 @@ export const forgotPassword = async (req, res) => {
 
   res.json({
     success: true,
-    message: 'Hemos enviado un email para reestablecer tu clave',
+    msg: 'Hemos enviado un email para reestablecer tu clave',
   });
 };
 //Reset password
@@ -180,33 +185,21 @@ export const newPassword = async (req, res) => {
     await user.save();
     res.json({ msg: 'Usuario modificado correctamente' });
   } else {
-    throw new BadRequestError('Token invalid');
-  }
-};
-
-//Validacion de Token
-export const requireToken = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    throw new ErrorResponse('Falta token de autorizacion');
-  }
-
-  const token = authHeader.split(' ')[1];
-
-  try {
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-
-    next();
-  } catch (error) {
-    next(error);
+    throw new BadRequestError('Token invalido');
   }
 };
 
 //Sign out account
 export const signout = (req, res) => {
   res.clearCookie('t');
+
+  delete req.headers.authorization;
+  delete req.headers['x-auth-token'];
+  delete req.headers['x-access-token'];
+  delete req.headers.cookie;
+
   res.json({
-    message: 'Signout success',
+    success: true,
+    msg: 'Signout success, token and headers cleared',
   });
 };

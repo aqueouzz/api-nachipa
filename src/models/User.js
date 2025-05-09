@@ -69,7 +69,7 @@ const userSchema = new mongoose.Schema(
     },
     internalRol: {
       type: String,
-      enum: ['admin', 'user'],
+      enum: ['superadmin', 'admin', 'user'],
       default: 'user',
     },
     password: {
