@@ -7,9 +7,19 @@ import {
   deleteCourse,
 } from '../controllers/courseController.js';
 
+// Middleware de Authentication
+import { authenticateToken } from '../middlewares/authenticationMiddleware.js';
+
 const router = Router();
 
-router.route('/').post(createCourse).get(getAllCourses);
-router.route('/:id').get(getCourse).patch(updateCourse).delete(deleteCourse);
+router
+  .route('/')
+  .post(authenticateToken, createCourse)
+  .get(authenticateToken, getAllCourses);
+router
+  .route('/:id')
+  .get(authenticateToken, getCourse)
+  .patch(authenticateToken, updateCourse)
+  .delete(authenticateToken, deleteCourse);
 
 export default router;

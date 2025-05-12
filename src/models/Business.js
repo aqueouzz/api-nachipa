@@ -58,7 +58,24 @@ const businessSchema = new mongoose.Schema(
       maxlength: 12,
     },
     description: { type: String, trim: true },
+    createdBy: {
+      type: mongoose.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    updatedBy: {
+      type: mongoose.Types.ObjectId,
+      ref: 'User',
+    },
+    deletedBy: {
+      type: mongoose.Types.ObjectId,
+      ref: 'User',
+    },
+    deletedAt: {
+      type: Date,
+    },
   },
+
   {
     timestamps: true,
   }

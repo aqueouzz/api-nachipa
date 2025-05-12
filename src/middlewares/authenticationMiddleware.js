@@ -1,11 +1,10 @@
 import jwt from 'jsonwebtoken';
 import { BadRequestError } from '../error/errorResponse.js';
-import { StatusCodes } from 'http-status-codes';
 
 export const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
 
-  console.log(authHeader);
+  // console.log(authHeader);
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     throw new BadRequestError('Falta token de autorizacion');

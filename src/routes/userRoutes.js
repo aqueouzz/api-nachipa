@@ -10,11 +10,19 @@ import {
 } from '../controllers/userController.js';
 import { validateIdParam } from '../middlewares/validationsUserMiddleware.js';
 
-router.route('/').get(getAllUsers);
-router.route('/:id').get(validateIdParam, getById);
+// Middleware de Authentication
+import { authenticateToken } from '../middlewares/authenticationMiddleware.js';
+
+router.route('/').get(authenticateToken, getAllUsers);
+router.route('/:id').get(authenticateToken, validateIdParam, getById);
 router
   .route('/:id')
-  .patch(multer.single('photoProfile'), validateIdParam, updateUser);
-router.route('/:id').delete(validateIdParam, deleteUser);
+  .patch(
+    authenticateToken,
+    multer.single('photoProfile'),
+    validateIdParam,
+    updateUser
+  );
+router.route('/:id').delete(authenticateToken, validateIdParam, deleteUser);
 
 export default router;

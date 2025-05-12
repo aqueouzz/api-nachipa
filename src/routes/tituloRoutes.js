@@ -7,9 +7,19 @@ import {
   deleteTitulo,
 } from '../controllers/tituloController.js';
 
+// Middleware de Authentication
+import { authenticateToken } from '../middlewares/authenticationMiddleware.js';
+
 const router = Router();
 
-router.route('/').post(createTitulo).get(getAllTitulos);
-router.route('/:id').get(getByID).patch(updateTitulo).delete(deleteTitulo);
+router
+  .route('/')
+  .post(authenticateToken, createTitulo)
+  .get(authenticateToken, getAllTitulos);
+router
+  .route('/:id')
+  .get(authenticateToken, getByID)
+  .patch(authenticateToken, updateTitulo)
+  .delete(authenticateToken, deleteTitulo);
 
 export default router;

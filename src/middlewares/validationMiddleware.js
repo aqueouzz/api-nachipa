@@ -1,7 +1,11 @@
 import { body, param, validationResult } from 'express-validator';
 import { BadRequestError } from '../error/errorResponse.js';
 import User from '../models/User.js';
+import Ubication from '../models/Ubication.js';
 import Business from '../models/Business.js';
+import Area from '../models/Area.js';
+import Rol from '../models/Rol.js';
+import Titulo from '../models/Titulo.js';
 import mongoose from 'mongoose';
 
 const withValidationErrors = (validateValues) => {
@@ -85,13 +89,89 @@ export const validateRegisterInput = withValidationErrors([
     }),
   body('businessID').custom(async (value, { req }) => {
     // Validar si el ID tiene formato válido de ObjectId
-    const isValidMongoId = mongoose.Types.ObjectId.isValid(value);
-    if (!isValidMongoId) throw new BadRequestError('Invalid MongoDB id');
+    // Validar formato de ObjectId
+    if (!value) return true;
+
+    if (!mongoose.Types.ObjectId.isValid(value)) {
+      throw new BadRequestError('Invalid MongoDB id!!');
+    }
 
     // Validar si existe en la base de datos
     const idBusiness = await Business.findById(req.body.businessID);
     if (!idBusiness) {
       throw new BadRequestError('Empresa no existe');
+    }
+
+    // Si pasa ambas validaciones, todo bien
+    return true;
+  }),
+  body('ubicationID').custom(async (value, { req }) => {
+    // Validar si el ID tiene formato válido de ObjectId
+    // Validar formato de ObjectId
+    if (!value) return true;
+
+    if (!mongoose.Types.ObjectId.isValid(value)) {
+      throw new BadRequestError('Invalid MongoDB id!!');
+    }
+
+    // Validar si existe en la base de datos
+    const idUbication = await Ubication.findById(req.body.ubicationID);
+    if (!idUbication) {
+      throw new BadRequestError('Ubication no existe');
+    }
+
+    // Si pasa ambas validaciones, todo bien
+    return true;
+  }),
+  body('professionalDegreeID').custom(async (value, { req }) => {
+    // Validar si el ID tiene formato válido de ObjectId
+    // Validar formato de ObjectId
+    if (!value) return true;
+
+    if (!mongoose.Types.ObjectId.isValid(value)) {
+      throw new BadRequestError('Invalid MongoDB id!!');
+    }
+
+    // Validar si existe en la base de datos
+    const idTitulo = await Titulo.findById(req.body.professionalDegreeID);
+    if (!idTitulo) {
+      throw new BadRequestError('Titulo no existe');
+    }
+
+    // Si pasa ambas validaciones, todo bien
+    return true;
+  }),
+  body('areaID').custom(async (value, { req }) => {
+    // Validar si el ID tiene formato válido de ObjectId
+    // Validar formato de ObjectId
+    if (!value) return true;
+
+    if (!mongoose.Types.ObjectId.isValid(value)) {
+      throw new BadRequestError('Invalid MongoDB id!!');
+    }
+
+    // Validar si existe en la base de datos
+    const idArea = await Area.findById(req.body.areaID);
+    if (!idArea) {
+      throw new BadRequestError('Area no existe');
+    }
+
+    // Si pasa ambas validaciones, todo bien
+    return true;
+  }),
+  body('rolID').custom(async (value, { req }) => {
+    // Validar si el ID tiene formato válido de ObjectId
+    // Validar formato de ObjectId
+    if (!value) return true;
+
+    if (!mongoose.Types.ObjectId.isValid(value)) {
+      throw new BadRequestError('Invalid MongoDB id!!');
+    }
+
+    // Validar si existe en la base de datos
+    const idRol = await Rol.findById(req.body.rolID);
+    if (!idRol) {
+      throw new BadRequestError('Rol no existe');
     }
 
     // Si pasa ambas validaciones, todo bien

@@ -1,4 +1,5 @@
-import mongoose from 'mongoose';
+import { mongoose } from 'mongoose';
+import { Types } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
@@ -50,22 +51,32 @@ const userSchema = new mongoose.Schema(
     businessID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Business',
+      default: () => new mongoose.Types.ObjectId(),
+      required: false,
     },
     ubicationID: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Ubication',
+      default: '681e0d4f63a6238dd4b1446e',
+      required: false,
     },
     areaID: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Area',
+      default: '681e0d4f63a6238dd4b1446e',
+      required: false,
     },
     professionalDegreeID: {
       type: String,
-      ref: 'ProfessionalDegree',
+      ref: 'Titulo',
+      default: () => new mongoose.Types.ObjectId(),
+      required: false,
     },
-    rol: {
-      type: String,
+    rolID: {
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Rol',
+      default: () => '681e0d4f63a6238dd4b1446e',
+      required: false,
     },
     internalRol: {
       type: String,
@@ -116,9 +127,13 @@ userSchema.methods.validatePassword = async function (password) {
 
 //Create token
 userSchema.methods.createToken = function () {
-  const token = jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_LIFETIME,
-  });
+  const token = jwt.sign(
+    { id: this._id, role: this.internalRol },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: process.env.JWT_LIFETIME,
+    }
+  );
   this.token = token;
   return token;
 };

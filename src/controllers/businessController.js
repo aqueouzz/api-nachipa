@@ -1,6 +1,21 @@
 import Business from '../models/Business.js';
 import { BadRequestError } from '../error/errorResponse.js';
 
+// Create a new Business
+export const createBusiness = async (req, res, next) => {
+  const business = new Business({ ...req.body, createdBy: req.user.id });
+
+  try {
+    await business.save();
+  } catch (error) {
+    throw new BadRequestError('Error al crear la empresa');
+  }
+  res.status(200).json({
+    msg: 'Empresa creada correctamente',
+    business,
+  });
+};
+
 // Get By ID Business
 export const getById = async (req, res) => {
   const { id } = req.params;
@@ -47,21 +62,6 @@ export const getAllBusiness = async (req, res) => {
   //     limit,
   //     business,
   // });
-};
-
-// Create a new Business
-export const createBusiness = async (req, res, next) => {
-  const business = new Business(req.body);
-
-  try {
-    await business.save();
-  } catch (error) {
-    throw new BadRequestError('Error al crear la empresa');
-  }
-  res.status(200).json({
-    msg: 'Empresa creada correctamente',
-    business,
-  });
 };
 
 // Update a new Business

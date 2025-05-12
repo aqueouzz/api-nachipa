@@ -7,13 +7,19 @@ import {
   updateUbication,
 } from '../controllers/ubicationController.js';
 
+// Middleware de Authentication
+import { authenticateToken } from '../middlewares/authenticationMiddleware.js';
+
 const router = Router();
 
-router.route('/').post(createUbication).get(getAllUbication);
+router
+  .route('/')
+  .post(authenticateToken, createUbication)
+  .get(authenticateToken, getAllUbication);
 router
   .route('/:id')
-  .get(getUbication)
-  .delete(deleteUbication)
-  .patch(updateUbication);
+  .get(authenticateToken, getUbication)
+  .delete(authenticateToken, deleteUbication)
+  .patch(authenticateToken, updateUbication);
 
 export default router;
