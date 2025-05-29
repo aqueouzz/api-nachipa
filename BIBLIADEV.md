@@ -207,6 +207,34 @@
 
     * Protección de rutas (middleware de auth)
 
+            Operación	superadmin	admin	user
+            Create	✅ Puede crear cualquier recurso (usuarios, empresas, etc.)	✅ Puede crear recursos limitados (por ejemplo, usuarios o registros dentro de su empresa)	⚠️ Puede crear recursos propios (ej: comentarios, solicitudes)
+            Read	✅ Puede leer todo (incluyendo datos sensibles)	✅ Puede leer todo excepto datos críticos de otros admins o superadmins	✅ Puede leer solo sus propios datos y algunos públicos
+            Update	✅ Puede actualizar cualquier recurso	✅ Puede actualizar recursos dentro de su ámbito (por ejemplo, editar su empresa, usuarios subordinados)	⚠️ Puede editar solo su propia información
+            Delete	✅ Puede eliminar cualquier recurso	⚠️ Puede eliminar recursos secundarios (ej: usuarios bajo su gestión)	❌ No puede eliminar nada excepto quizá su cuenta (opcional)
+
+            🔍 Detalles por rol
+            🔵 superadmin
+                Control total del sistema.
+
+                Puede gestionar a otros admins y empresas.
+
+                Accede a datos globales.
+
+            🟠 admin
+                Gestión parcial, típicamente por empresa o grupo.
+
+                Puede manejar usuarios bajo su responsabilidad.
+
+                No tiene acceso a funciones del sistema completo.
+
+            🟢 user
+                    Acceso limitado, enfocado en su experiencia personal.
+
+                    No ve ni modifica nada ajeno.
+
+                    Ideal para clientes o empleados normales.
+
     * Tests básicos (si es posible)
 
             Autenticación: Usa JWT para autenticar usuarios.

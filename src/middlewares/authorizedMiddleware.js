@@ -1,51 +1,45 @@
-import JWT from 'jsonwebtoken';
-import { StatusCodes } from 'http-status-codes';
-import { permissions } from '../utils/permissions.js';
+import { permissionsComplete } from '../utils/permissions.js';
 
-import { BadRequestError } from '../error/errorResponse.js';
+import User from '../models/User.js';
 
-export const authorizedMiddleware = (req, res, next) => {
-  const token = req.headers.authorization.split(' ')[1];
+import { BadRequestError, ForbiddenError } from '../error/errorResponse.js';
 
-  if (!token) {
-    return res.status(401).json({ message: 'No token provided' });
-  }
+// ✅ :  Antes se valida que este asociado al modelo empresa
+// ✅ :  Se valida que tenga un Rol y que tenga permisos para realizar una acción específica en un modelo específico.s
+export const authorizeAction = (action, model) => {
+  return async (req, res, next) => {
+    const userCount = await User.countDocuments();
 
-  const decodedToken = JWT.verify(token, process.env.JWT_SECRET);
-  req.user = decodedToken;
-
-  const { role } = decodedToken;
-
-  const validRoles = ['user', 'admin', 'superadmin'];
-
-  if (!validRoles.includes(role)) {
-    throw new BadRequestError('Usuario debe tener un rol válido');
-  }
-
-  if (role === 'user' || role === undefined) {
-    throw new BadRequestError('User is not authorized to access this route');
-  }
-
-  next();
-};
-
-export const authorizeAction = (action) => {
-  return (req, res, next) => {
-    const userRole = req.user?.role;
-
-    console.log(userRole);
-
-    if (!userRole) {
-      throw new BadRequestError('Rol no definido');
+    // ✅ Si no hay usuarios, permitir el paso sin importar headers
+    if (userCount === 0) {
+      return next(); // No hay usuarios: permite el acceso
     }
 
-    const allowedActions = permissions[userRole] || [];
+    const role = req.user?.role;
 
-    console.log(allowedActions);
+    if (!role) {
+      throw new ForbiddenError('Rol no definido!');
+    }
+
+    // ✅ : si el rol es superadmin, permitir el paso sin validar sus permisos
+    // ❌ : Pero deberia validar hasta que punto puede eliminar o editar
+    if (req.user.role === 'superadmin') {
+      return next();
+    }
+
+    const modelPermissions = permissionsComplete[model];
+
+    if (!modelPermissions) {
+      return res
+        .status(403)
+        .json({ message: 'No tienes permisos para realizar esta acción!' });
+    }
+
+    const allowedActions = modelPermissions[role] || [];
 
     if (!allowedActions.includes(action)) {
-      throw new BadRequestError(
-        `No tienes permiso para realizar esta acción: ${action}`
+      throw new ForbiddenError(
+        `No tienes permiso para realizar esta acción: ${action} en ${model}`
       );
     }
 

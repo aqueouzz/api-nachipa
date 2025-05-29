@@ -6,14 +6,14 @@ const courseSchema = mongoose.Schema(
     courseID: {
       type: String,
       required: [true, 'Campo ID del curso es requerido'],
-      unique: true,
       default: () => nanoid(10),
     },
     name: {
       type: String,
       required: [true, 'Nombre del curso es requerido'],
-      unique: true,
+      unique: [true, 'El nombre del curso debe ser único'],
       trim: true,
+      lowercase: true,
       minLength: [2, 'El nombre del curso debe tener al menos 2 caracteres'],
       maxlength: [
         50,
@@ -43,6 +43,22 @@ const courseSchema = mongoose.Schema(
     state: {
       type: Boolean,
       default: true,
+    },
+    createdBy: {
+      type: mongoose.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    updatedBy: {
+      type: mongoose.Types.ObjectId,
+      ref: 'User',
+    },
+    deletedBy: {
+      type: mongoose.Types.ObjectId,
+      ref: 'User',
+    },
+    deletedAt: {
+      type: Date,
     },
   },
   {

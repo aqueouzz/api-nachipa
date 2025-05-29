@@ -6,14 +6,15 @@ const businessSchema = new mongoose.Schema(
       type: String,
       maxlength: 10,
       required: [true, 'Rut es requerido,desde modelo'],
-      unique: true,
+      unique: [true, 'Rut empresa ya existe'],
       trim: true,
     },
     name: {
       type: String,
       trim: true,
-      maxlength: 12,
-      unique: true,
+      maxlength: [20, 'Nombre empresa excede maximo de caracteres'],
+      lowercase: true,
+      unique: [true, 'Nombre empresa ya existe'],
       required: [true, 'Nombre empresa es requerido,desde modelo'],
     },
     giro: {

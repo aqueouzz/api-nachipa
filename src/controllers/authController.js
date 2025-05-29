@@ -1,18 +1,46 @@
-import User from '../models/User.js';
+// Librerías
 import { StatusCodes } from 'http-status-codes';
 import fs from 'fs/promises';
 import path from 'path';
+// Importar modelos
+import User from '../models/User.js';
 import { emailRegister, resetPassword } from '../utils/email.js';
+
 import {
   UnauthenticatedError,
-  UnauthorizedError,
   BadRequestError,
 } from '../error/errorResponse.js';
 
 //Create a new user
 export const registerUser = async (req, res, next) => {
+  const totalUsers = await User.countDocuments();
+
+  // Si no hay usuarios, se permite omitir "createdBy"
+  const isFirstUser = totalUsers === 0;
+
+  // ✅ : Validar que solo el superadmin pueda crear usuarios
+  if (!isFirstUser && req.user.role !== 'superadmin') {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      msg: 'Solo el super sayayin puede crear usuarios',
+    });
+  }
+
   try {
-    const user = new User(req.body);
+    const userData = {
+      ...req.body,
+    };
+
+    if (isFirstUser) {
+      //Forzar rol superadmin en el primer usuario
+      userData.internalRol = 'superadmin';
+      userData.createdBy = null;
+    }
+
+    if (!isFirstUser) {
+      userData.createdBy = req.user.id;
+    }
+
+    const user = new User(userData);
     const token = user.createToken();
     user.token = token;
 
@@ -172,6 +200,7 @@ export const forgotPassword = async (req, res) => {
     msg: 'Hemos enviado un email para reestablecer tu clave',
   });
 };
+
 //Reset password
 export const newPassword = async (req, res) => {
   const { token } = req.params;

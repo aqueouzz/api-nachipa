@@ -23,6 +23,22 @@ const businessSchema = mongoose.Schema(
     state: {
       type: Boolean,
     },
+    createdBy: {
+      type: mongoose.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    updatedBy: {
+      type: mongoose.Types.ObjectId,
+      ref: 'User',
+    },
+    deletedBy: {
+      type: mongoose.Types.ObjectId,
+      ref: 'User',
+    },
+    deletedAt: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );

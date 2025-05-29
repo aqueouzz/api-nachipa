@@ -17,20 +17,13 @@ const withValidationErrors = (validateValues) => {
         const errorMessages = errors.array().map((error) => error.msg);
 
         const firstMessage = errorMessages[0];
-        // console.log(Object.getPrototypeOf(firstMessage));
-        // if (errorMessages[0].startsWith("no job")) {
-        //   throw new NotFoundError(errorMessages);
-        // }
-        // if (errorMessages[0].startsWith("not authorized")) {
-        //   throw new UnauthorizedError("not authorized to access this route");
-        // }
         throw new BadRequestError(errorMessages);
       }
       next();
     },
   ];
 };
-// Validate user register input
+// 🚀 : UTILIZADO - Validate user register input
 export const validateRegisterInput = withValidationErrors([
   body('run')
     .notEmpty()
@@ -80,7 +73,7 @@ export const validateRegisterInput = withValidationErrors([
     .notEmpty()
     .withMessage('email is required')
     .isEmail()
-    .withMessage('invalid email format')
+    .withMessage('Formato invalido de email')
     .custom(async (email) => {
       const user = await User.findOne({ email });
       if (user) {
@@ -182,11 +175,11 @@ export const validateRegisterInput = withValidationErrors([
     .withMessage('password is required')
     .isLength({ min: 8 })
     .withMessage('password must be at least 8 characters long'),
-  body('accessAplications')
-    .notEmpty()
-    .withMessage('accessAplications es requerido por favor')
-    .isIn(['omi', 'equipment'])
-    .withMessage('Application must be omi || equipment'),
+  // body('accessAplications')
+  //   .notEmpty()
+  //   .withMessage('accessAplications es requerido por favor')
+  //   .isIn(['omi', 'equipment'])
+  //   .withMessage('Application must be omi || equipment'),
 ]);
 
 // Validate business create input

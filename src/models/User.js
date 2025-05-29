@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
       unique: true,
+      lowercase: true,
       required: [true, 'username es requerido... validacion desde el modelo'],
     },
     firstName: {
@@ -25,6 +26,7 @@ const userSchema = new mongoose.Schema(
     },
     lastName: {
       type: String,
+      required: [true, 'firstName es requerido... validacion desde el modelo'],
       trim: true,
     },
     birthDate: {
@@ -32,6 +34,7 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
+      lowercase: true,
       required: [true, 'email es requerido... validacion desde el modelo'],
       match: [
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
@@ -57,30 +60,31 @@ const userSchema = new mongoose.Schema(
     ubicationID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Ubication',
-      default: '681e0d4f63a6238dd4b1446e',
+      default: new mongoose.Types.ObjectId(),
       required: false,
     },
     areaID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Area',
-      default: '681e0d4f63a6238dd4b1446e',
+      default: new mongoose.Types.ObjectId(),
       required: false,
     },
     professionalDegreeID: {
       type: String,
       ref: 'Titulo',
-      default: () => new mongoose.Types.ObjectId(),
+      default: new mongoose.Types.ObjectId(),
       required: false,
     },
     rolID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Rol',
-      default: () => '681e0d4f63a6238dd4b1446e',
+      default: () => new mongoose.Types.ObjectId(),
       required: false,
     },
     internalRol: {
       type: String,
       enum: ['superadmin', 'admin', 'user'],
+      lowercase: true,
       default: 'user',
     },
     password: {
@@ -95,7 +99,6 @@ const userSchema = new mongoose.Schema(
       type: [String],
       enum: ['omi', 'equipment'],
       default: ['omi'],
-      required: [true, 'Aplicacion requerida... validacion desde el modelo'],
     },
     token: {
       type: String,
@@ -107,6 +110,24 @@ const userSchema = new mongoose.Schema(
     photoProfile: {
       type: String,
       required: false,
+    },
+    // 🟢 Tracking
+    createdBy: {
+      type: mongoose.Types.ObjectId,
+      ref: 'User',
+      required: false, // ✅ ahora no es obligatorio
+      default: null,
+    },
+    updatedBy: {
+      type: mongoose.Types.ObjectId,
+      ref: 'User',
+    },
+    deletedBy: {
+      type: mongoose.Types.ObjectId,
+      ref: 'User',
+    },
+    deletedAt: {
+      type: Date,
     },
   },
   { timestamps: true }
@@ -128,7 +149,11 @@ userSchema.methods.validatePassword = async function (password) {
 //Create token
 userSchema.methods.createToken = function () {
   const token = jwt.sign(
-    { id: this._id, role: this.internalRol },
+    {
+      id: this._id,
+      role: this.internalRol,
+      businessID: this.businessID?.toString(),
+    },
     process.env.JWT_SECRET,
     {
       expiresIn: process.env.JWT_LIFETIME,

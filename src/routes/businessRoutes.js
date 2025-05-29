@@ -1,4 +1,10 @@
 import { Router } from 'express';
+
+// Importar modelos
+import User from '../models/User.js';
+import Business from '../models/Business.js';
+
+// Importar controladores
 import {
   createBusiness,
   getAllBusiness,
@@ -6,37 +12,60 @@ import {
   updateBusiness,
   deleteBusiness,
 } from '../controllers/businessController.js';
-import { validateRegisterBusinessInput } from '../middlewares/validationMiddleware.js';
+import { validateRegisterBusinessInput } from '../middlewares/validationRegisterUserMiddleware.js';
 import { validateIdParam } from '../middlewares/validateIdParams.js';
 
 // Middleware de Authentication
-import {
-  authorizedMiddleware,
-  authorizeAction,
-} from '../middlewares/authorizedMiddleware.js';
+import { authorizeAction } from '../middlewares/authorizedMiddleware.js';
 import { authenticateToken } from '../middlewares/authenticationMiddleware.js';
+import { validateObjectIdsAndExistence } from '../middlewares/validationsUserMiddleware.js';
 
 const router = Router();
 
+// 📈 :
 router.get(
   '/',
   authenticateToken,
-  authorizedMiddleware,
-  authorizeAction('read'),
+  authorizeAction('read_own', 'business'),
   getAllBusiness
 );
+
 router.post(
   '/',
   authenticateToken,
-  authorizedMiddleware,
-  validateRegisterBusinessInput,
+  authorizeAction('create', 'business'),
   createBusiness
 );
-router
-  .route('/:id')
-  .all(authenticateToken, validateIdParam)
-  .get(getById)
-  .patch(updateBusiness)
-  .delete(deleteBusiness);
+
+router.get(
+  '/:id',
+  authenticateToken,
+  authorizeAction('read_own', 'business'),
+  validateObjectIdsAndExistence([
+    { field: 'businessID', model: User, location: 'user' },
+  ]),
+  getById
+);
+
+router.patch(
+  '/:id',
+  authenticateToken,
+  authorizeAction('update', 'business'),
+  validateObjectIdsAndExistence([
+    // { field: 'businessID', model: User, location: 'user' },
+    { field: 'id', model: Business, location: 'params' },
+  ]),
+  updateBusiness
+);
+
+router.delete(
+  '/:id',
+  authenticateToken,
+  authorizeAction('delete', 'business'),
+  validateObjectIdsAndExistence([
+    { field: 'id', model: Business, location: 'params' },
+  ]),
+  deleteBusiness
+);
 
 export default router;

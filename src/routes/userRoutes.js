@@ -1,6 +1,13 @@
+// Dependecies
 import express from 'express';
 const router = express.Router();
 import multer from '../middlewares/multerMiddleware.js';
+
+// Importar modelos
+import User from '../models/User.js';
+import Business from '../models/Business.js';
+import Ubication from '../models/Ubication.js';
+import Rol from '../models/Rol.js';
 
 import {
   getAllUsers,
@@ -8,21 +15,48 @@ import {
   updateUser,
   deleteUser,
 } from '../controllers/userController.js';
-import { validateIdParam } from '../middlewares/validationsUserMiddleware.js';
 
-// Middleware de Authentication
+// Middleware
 import { authenticateToken } from '../middlewares/authenticationMiddleware.js';
+import { authorizeAction } from '../middlewares/authorizedMiddleware.js';
+import { validateObjectIdsAndExistence } from '../middlewares/validationsUserMiddleware.js';
 
-router.route('/').get(authenticateToken, getAllUsers);
-router.route('/:id').get(authenticateToken, validateIdParam, getById);
 router
-  .route('/:id')
+  .route('/')
+  .all(authenticateToken)
+  .get(authorizeAction('read_own', 'user'), getAllUsers);
+
+router.route('/:id').get(
+  validateObjectIdsAndExistence([
+    { field: 'id', model: User, location: 'body' },
+    { field: 'businessID', model: Business, location: 'body' },
+  ]),
+  authorizeAction('read_own', 'user'),
+  getById
+);
+
+router
+  .route('/')
+  .all(authenticateToken)
   .patch(
-    authenticateToken,
     multer.single('photoProfile'),
-    validateIdParam,
+    validateObjectIdsAndExistence([
+      { field: 'id', model: User, location: 'body' },
+      { field: 'businessID', model: Business, location: 'body' },
+      { field: 'ubicationID', model: Ubication, location: 'body' },
+      { field: 'rolID', model: Rol, location: 'body' },
+    ]),
     updateUser
   );
-router.route('/:id').delete(authenticateToken, validateIdParam, deleteUser);
+router
+  .route('/:id')
+  .delete(
+    authenticateToken,
+    validateObjectIdsAndExistence([
+      { field: 'id', model: User, location: 'body' },
+    ]),
+    authorizeAction('delete', 'user'),
+    deleteUser
+  );
 
 export default router;

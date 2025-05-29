@@ -3,30 +3,49 @@ import StatusCodes from 'http-status-codes';
 
 // Create a new Titulo
 export const createTitulo = async (req, res) => {
-  const titulo = await Titulo.create(req.body);
-
+  // Creamos un objeto response con los datos que vienen del body
   const response = {
-    institution: titulo.institution,
-    name: titulo.name,
-    description: titulo.description,
+    institution: req.body.institution,
+    name: req.body.name,
+    description: req.body.description,
+    createdBy: req.user.id,
   };
+
+  // Creamos el titulo con el modelo Titulo
+  const titulo = await Titulo.create(response);
+
+  // Vuelves a buscar solo lo que necesitas
+  const tituloResponse = await Titulo.findById(titulo._id).select('name');
 
   res.status(StatusCodes.CREATED).json({
     success: true,
     msg: 'Titulo creado correctamente',
-    data: response,
+    data: tituloResponse,
   });
 };
 
 // Get All Titulos
 export const getAllTitulos = async (req, res) => {
-  const titulos = await Titulo.find().select(
+  // 1.- Buscamos los titulos creados por el usuario superadmin
+  // ya que otro usuario no puede realizar oepraciones CRUD sobre los titulos
+
+  const titulos = await Titulo.find({ createdBy: req.user.id }).select(
     '-__v -_id -createdAt -updatedAt -__v -createdAt -updatedAt'
   );
+
+  const titulosCount = await Titulo.countDocuments();
+
+  if (titulosCount === 0) {
+    return res.status(StatusCodes.NOT_FOUND).json({
+      success: false,
+      msg: 'No se encontraron titulos registrados',
+    });
+  }
 
   res.status(StatusCodes.OK).json({
     success: true,
     msg: 'Titulos obtenidos correctamente',
+    count: titulos.length,
     data: titulos,
   });
 };
@@ -46,9 +65,13 @@ export const getByID = async (req, res) => {
 
 // Update Titulo
 export const updateTitulo = async (req, res) => {
-  await Titulo.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-  });
+  await Titulo.findByIdAndUpdate(
+    req.params.id,
+    { ...req.body, updatedBy: req.user.id },
+    {
+      new: true,
+    }
+  );
 
   // Consultar el documento actualizado con campos limitados
   const tituloResponse = await Titulo.findById(req.params.id).select(
