@@ -1,5 +1,4 @@
 import Ubication from '../models/Ubication.js';
-import Business from '../models/Business.js';
 import User from '../models/User.js';
 import StatusCodes from 'http-status-codes';
 import { BadRequestError, ForbiddenError } from '../error/errorResponse.js';

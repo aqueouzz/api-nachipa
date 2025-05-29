@@ -47,5 +47,10 @@ export const permissionsComplete = {
     admin: ['read_own', 'update_own'],
     user: ['update_own', 'read_own'],
   },
+  userCourse: {
+    superadmin: ['create', 'read', 'update', 'delete'],
+    admin: ['create_own', 'read_own', 'update_own'],
+    user: ['read_own'],
+  },
   // Agrega otros modelos según sea necesario
 };

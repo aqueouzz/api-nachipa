@@ -25,6 +25,7 @@ import rolRoutes from './routes/rolRoutes.js';
 import tituloRoutes from './routes/tituloRoutes.js';
 import courseRoutes from './routes/courseRoutes.js';
 import areaRoutes from './routes/areaRoutes.js';
+import userCoursesRoutes from './routes/userCourses.js';
 
 //Route default
 app.get('/api-nachipa/v1', (req, res) => {
@@ -40,6 +41,7 @@ app.use('/api-nachipa/v1/rol', rolRoutes);
 app.use('/api-nachipa/v1/titulo', tituloRoutes);
 app.use('/api-nachipa/v1/course', courseRoutes);
 app.use('/api-nachipa/v1/area', areaRoutes);
+app.use('/api-nachipa/v1/user-courses/assign', userCoursesRoutes);
 
 //Route not found
 app.use('*', (req, res) => {

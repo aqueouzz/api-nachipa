@@ -127,6 +127,7 @@ export const validateObjectIdsAndExistence = (fieldsWithModels = []) => {
         // console.log('>> Validando businessID desde req.user');
         // console.log('Valor:', value);
         // console.log('Tipo:', typeof value);
+        // console.log(location);
 
         // const exists = await model.findById(value);
         // console.log('Existe?:', exists);

@@ -5,18 +5,18 @@ const userCourseSchema = new mongoose.Schema(
     userID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: [true, 'El campo user es obligatorio.'],
     },
     courseID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Course',
-      required: true,
+      required: [true, 'El campo course es obligatorio.'],
     },
     status: {
       type: String,
       enum: ['Pendiente', 'Completado'],
       default: 'Pendiente',
-      required: true,
+      required: [true, 'El campo status es obligatorio.'],
     },
     expirationDate: {
       type: Date,
@@ -29,7 +29,7 @@ const userCourseSchema = new mongoose.Schema(
     managementOrOperation: {
       type: String,
       enum: ['Gestion', 'Operacion', 'Apoyo'],
-      default: 'Pendiente',
+      default: 'Gestion',
     },
     boardingCardValidUntil: {
       // vigencia libreta de embarco del usuario en ese curso
@@ -45,10 +45,15 @@ const userCourseSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
     },
+    notes: {
+      type: String,
+      default: '',
+      maxlength: [250, 'Nota no debe exceder maximo de caracteres 250lim'],
+    },
   },
   {
     timestamps: true,
   }
 );
 
-export default mongoose.model('UserCourse', userCourseSchema, 'userCourses');
+export default mongoose.model('UserCourse', userCourseSchema);
