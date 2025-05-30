@@ -50,11 +50,16 @@ export const assingCourseToUser = async (req, res) => {
 export const getUserCourses = async (req, res) => {
   const { id } = req.params;
 
-  const userCourses = await UserCourse.find({ userID: id }).populate({
-    path: 'courseID',
-    // match : { status: 'Completado' },
-    select: 'name description dictoCourse',
-  });
+  const userCourses = await UserCourse.find({ userID: id })
+    .populate({
+      path: 'courseID',
+      // match : { status: 'Completado' },
+      select: 'name description dictoCourse',
+      options: {
+        limit: 5,
+      },
+    })
+    .select('-createdAt -updatedAt -createdBy -__v -status');
 
   res.status(StatusCodes.OK).json({
     success: true,
