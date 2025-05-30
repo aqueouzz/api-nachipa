@@ -15,7 +15,7 @@ const userCourseSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ['Pendiente', 'Completado'],
-      default: 'Pendiente',
+      default: 'Completado',
       required: [true, 'El campo status es obligatorio.'],
     },
     expirationDate: {

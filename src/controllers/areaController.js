@@ -116,7 +116,7 @@ export const getAreaById = async (req, res) => {
   );
 
   if (!user) {
-    return res.status(404).json({
+    return res.status(StatusCodes.NOT_FOUND).json({
       success: false,
       msg: 'Usuario no encontrado',
     });
@@ -128,7 +128,7 @@ export const getAreaById = async (req, res) => {
   );
 
   if (!area) {
-    return res.status(404).json({
+    return res.status(StatusCodes.NOT_FOUND).json({
       success: false,
       msg: 'Área no encontrada',
     });
@@ -138,7 +138,7 @@ export const getAreaById = async (req, res) => {
   const ubication = await Ubication.findById(area.ubicationID);
 
   if (!ubication) {
-    return res.status(404).json({
+    return res.status(StatusCodes.NOT_FOUND).json({
       success: false,
       msg: 'Ubicación asociada al área no encontrada',
     });
@@ -166,7 +166,7 @@ export const getAreaById = async (req, res) => {
   }
 
   // 5. Respuesta
-  return res.status(200).json({
+  return res.status(StatusCodes.OK).json({
     success: true,
     msg: 'Área obtenida',
     data: area,
@@ -204,7 +204,7 @@ export const updateArea = async (req, res) => {
   const ubication = await Ubication.findById(area.ubicationID);
 
   if (!ubication) {
-    return res.status(404).json({
+    return res.status(StatusCodes.NOT_FOUND).json({
       success: false,
       msg: 'Ubicación asociada al área no encontrada',
     });
@@ -222,7 +222,7 @@ export const updateArea = async (req, res) => {
 
   if (!isSuperAdmin) {
     if (!isAuthorized) {
-      return res.status(403).json({
+      return res.status(StatusCodes.FORBIDDEN).json({
         success: false,
         msg: 'No tiene permisos para ver esta área',
       });
@@ -263,7 +263,7 @@ export const deleteArea = async (req, res) => {
   );
 
   if (!area) {
-    return res.status(404).json({
+    return res.status(StatusCodes.NOT_FOUND).json({
       success: false,
       msg: 'Área no encontrada',
     });
@@ -293,7 +293,7 @@ export const deleteArea = async (req, res) => {
 
   if (!isSuperAdmin) {
     if (!isAuthorized) {
-      return res.status(403).json({
+      return res.status(StatusCodes.FORBIDDEN).json({
         success: false,
         msg: 'No tiene permisos para ver esta área',
       });

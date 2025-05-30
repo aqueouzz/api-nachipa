@@ -57,7 +57,7 @@ export const validateBodyObjectIds =
     );
 
     if (invalidFields.length > 0) {
-      return res.status(400).json({
+      return res.status(StatusCodes.BAD_REQUEST).json({
         msg: `IDs inválidos en los campos: ${invalidFields.join(', ')}`,
       });
     }
@@ -192,7 +192,7 @@ export const validateEmail = async (req, res, next) => {
 
   if (!email || !isValidEmailFormat(email)) {
     return res
-      .status(400)
+      .status(StatusCodes.BAD_REQUEST)
       .json({ success: false, message: 'Formato de email inválido' });
   }
 

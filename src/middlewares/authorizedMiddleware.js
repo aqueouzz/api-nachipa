@@ -3,6 +3,7 @@ import { permissionsComplete } from '../utils/permissions.js';
 import User from '../models/User.js';
 
 import { BadRequestError, ForbiddenError } from '../error/errorResponse.js';
+import { StatusCodes } from 'http-status-codes';
 
 // ✅ :  Antes se valida que este asociado al modelo empresa
 // ✅ :  Se valida que tenga un Rol y que tenga permisos para realizar una acción específica en un modelo específico.s
@@ -17,6 +18,8 @@ export const authorizeAction = (action, model) => {
 
     const role = req.user?.role;
 
+    // console.log(role);
+
     if (!role) {
       throw new ForbiddenError('Rol no definido!');
     }
@@ -29,13 +32,17 @@ export const authorizeAction = (action, model) => {
 
     const modelPermissions = permissionsComplete[model];
 
+    // console.log(modelPermissions);
+
     if (!modelPermissions) {
       return res
-        .status(403)
+        .status(StatusCodes.FORBIDDEN)
         .json({ message: 'No tienes permisos para realizar esta acción!' });
     }
 
     const allowedActions = modelPermissions[role] || [];
+
+    // console.log(allowedActions);
 
     if (!allowedActions.includes(action)) {
       throw new ForbiddenError(

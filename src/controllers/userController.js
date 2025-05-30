@@ -17,7 +17,7 @@ export const getAllUsers = async (req, res) => {
     users = await User.find().select('-password -_id -token -confirmed');
   }
 
-  res.status(200).json({
+  res.status(StatusCodes.CREATED).json({
     success: true,
     count: users.length,
     data: users,
@@ -37,7 +37,7 @@ export const getById = async (req, res) => {
   );
 
   if (!user) {
-    return res.status(404).json({
+    return res.status(StatusCodes.NOT_FOUND).json({
       success: false,
       msg: 'User not found',
     });
@@ -119,7 +119,7 @@ export const updateUser = async (req, res) => {
         await fs.mkdir(uploadDir, { recursive: true }); // No falla si ya existe
       } catch (err) {
         console.error('Error creando carpeta:', err);
-        return res.status(500).json({
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
           success: false,
           message: 'Error al crear carpeta de subida.',
         });
@@ -132,7 +132,7 @@ export const updateUser = async (req, res) => {
       } catch (err) {
         console.error('Error al guardar archivo:', err);
         return res
-          .status(500)
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
           .json({ success: false, message: 'Error al guardar la imagen.' });
       }
 

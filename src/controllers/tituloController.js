@@ -1,5 +1,7 @@
-import Titulo from '../models/Titulo.js';
+// Dependencies
 import StatusCodes from 'http-status-codes';
+// Models
+import Titulo from '../models/Titulo.js';
 
 // Create a new Titulo
 export const createTitulo = async (req, res) => {

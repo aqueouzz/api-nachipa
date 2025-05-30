@@ -1,11 +1,15 @@
-// Librerías
+// Dependencies
 import { StatusCodes } from 'http-status-codes';
 import fs from 'fs/promises';
 import path from 'path';
+
 // Importar modelos
 import User from '../models/User.js';
+
+// Utils
 import { emailRegister, resetPassword } from '../utils/email.js';
 
+// Errors
 import {
   UnauthenticatedError,
   BadRequestError,
@@ -74,7 +78,7 @@ export const registerUser = async (req, res, next) => {
         await fs.mkdir(uploadDir, { recursive: true }); // No falla si ya existe
       } catch (err) {
         console.error('Error creando carpeta:', err);
-        return res.status(500).json({
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
           success: false,
           message: 'Error al crear carpeta de subida.',
         });
@@ -87,7 +91,7 @@ export const registerUser = async (req, res, next) => {
       } catch (err) {
         console.error('Error al guardar archivo:', err);
         return res
-          .status(500)
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
           .json({ success: false, message: 'Error al guardar la imagen.' });
       }
     }
@@ -144,7 +148,7 @@ export const signIn = async (req, res) => {
     maxAge: 3600000, // 1 hora
   });
 
-  res.status(201).json({ user: user.firstName, token: token });
+  res.status(StatusCodes.OK).json({ user: user.firstName, token: token });
 };
 
 //Confimation account
@@ -170,7 +174,7 @@ export const confirmationAccount = async (req, res) => {
   await userConfirm.save();
 
   res
-    .status(200)
+    .status(StatusCodes.OK)
     .json({ success: true, message: 'Cuenta confirmada correctamente' });
 };
 

@@ -1,7 +1,12 @@
+// Dependencies
+import StatusCodes from 'http-status-codes';
+
+// Errors
+import { BadRequestError, ForbiddenError } from '../error/errorResponse.js';
+
+// Models
 import Ubication from '../models/Ubication.js';
 import User from '../models/User.js';
-import StatusCodes from 'http-status-codes';
-import { BadRequestError, ForbiddenError } from '../error/errorResponse.js';
 
 // 🚀 :  Create a new Ubication
 export const createUbication = async (req, res) => {

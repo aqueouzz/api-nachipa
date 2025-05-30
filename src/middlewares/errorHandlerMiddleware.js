@@ -22,7 +22,11 @@ const errorHandlerMiddleware = (err, req, res, next) => {
   }
 
   // Manejar errores de sintaxis
-  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+  if (
+    err instanceof SyntaxError &&
+    err.status === StatusCodes.BAD_REQUEST &&
+    'body' in err
+  ) {
     msg = 'Invalid JSON payload';
   }
 

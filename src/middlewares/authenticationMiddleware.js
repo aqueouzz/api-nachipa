@@ -1,5 +1,10 @@
+// Dependencies
 import jwt from 'jsonwebtoken';
+
+// Errors
 import { UnauthenticatedError } from '../error/errorResponse.js';
+
+// Models
 import User from '../models/User.js';
 
 export const authenticateToken = async (req, res, next) => {

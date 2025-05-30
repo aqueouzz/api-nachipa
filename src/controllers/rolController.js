@@ -1,5 +1,7 @@
-import Rol from '../models/Rol.js';
+// Dependencies
 import StatusCodes from 'http-status-codes';
+// Models
+import Rol from '../models/Rol.js';
 
 // 🚀 : Create Rol
 export const createRol = async (req, res) => {

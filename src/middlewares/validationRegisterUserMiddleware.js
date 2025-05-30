@@ -248,3 +248,11 @@ export const validateRegisterBusinessInput = withValidationErrors([
     }),
   body('nameContact').notEmpty().withMessage('Nombre contacto es requerido'),
 ]);
+
+export const validateStatus = withValidationErrors([
+  body('accessAplications')
+    .notEmpty()
+    .withMessage('accessAplications es requerido por favor')
+    .isIn(['omi', 'equipment'])
+    .withMessage('Application must be omi || equipment'),
+]);

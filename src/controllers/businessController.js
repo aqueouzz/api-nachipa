@@ -1,6 +1,11 @@
-import Business from '../models/Business.js';
-import { BadRequestError } from '../error/errorResponse.js';
+// Dependencies
 import { StatusCodes } from 'http-status-codes';
+
+// Models
+import Business from '../models/Business.js';
+
+// Errors
+import { BadRequestError } from '../error/errorResponse.js';
 
 // 🚀 : Create a new Business
 export const createBusiness = async (req, res, next) => {
@@ -10,7 +15,7 @@ export const createBusiness = async (req, res, next) => {
 
   await business.save();
 
-  res.status(200).json({
+  res.status(StatusCodes.CREATED).json({
     msg: 'Empresa creada correctamente',
     data: business,
   });
@@ -32,7 +37,7 @@ export const getById = async (req, res) => {
     throw new BadRequestError('No tienes permiso para ver esta empresa');
   }
 
-  res.status(200).json({
+  res.status(StatusCodes.OK).json({
     success: true,
     msg: 'Empresa encontrada',
     data: business,
@@ -57,7 +62,7 @@ export const getAllBusiness = async (req, res) => {
     });
   }
 
-  res.status(200).json({
+  res.status(StatusCodes.OK).json({
     success: true,
     msg: 'Lista de empresas',
     count: business.length,

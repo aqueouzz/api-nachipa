@@ -1,5 +1,8 @@
-import Course from '../models/Course.js';
+// Dependencies
 import StatusCodes from 'http-status-codes';
+
+// Models
+import Course from '../models/Course.js';
 
 // 🚀 Create a new course
 export const createCourse = async (req, res) => {
