@@ -6,6 +6,8 @@ import express from 'express';
 import morgan from 'morgan';
 import mongoSanitize from 'express-mongo-sanitize';
 import cors from 'cors';
+import cron from 'node-cron';
+import checkExpiringCourses from './tasks/checkExpiringCourses.js';
 
 // Initializing the app with express
 const app = express();
@@ -59,6 +61,11 @@ app.use('/api-nachipa/v1/titulo', tituloRoutes);
 app.use('/api-nachipa/v1/course', courseRoutes);
 app.use('/api-nachipa/v1/area', areaRoutes);
 app.use('/api-nachipa/v1/user-courses', userCoursesRoutes);
+
+// Task Notification Courses Expired
+cron.schedule('* * * * *', () => {
+  setImmediate(() => checkExpiringCourses());
+});
 
 // Route not found
 app.use('*', (req, res) => {

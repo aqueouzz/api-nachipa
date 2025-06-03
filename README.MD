@@ -17,8 +17,8 @@ git log --oneline
 git branch // Saber en que rama estoy parado
 git branch --show-current // comando mas limpio (solo la actual)
 
-git remote add origin https://github.com/username/repo.git
-git push -u origin main
+git remote add origin (https://github.com/aqueouzz/api-nachipa.git)
+git push -u origin master
 
 Tips Commits :
     Tipo	Uso
@@ -37,3 +37,56 @@ git checkout -b feature/users-endpoint
 # RAMA DEVELOP
 
 npm i express
+
+
+# DOCKER 
+
+    docker --version
+
+    docker images
+
+
+
+Crear archivos DockerFile
+Crear archivos docker-compose.yml
+Crear archivos .dockerignore
+
+
+Validar la exclusion de archivos
+
+    docker build --no-cache --progress plain -f Dockerfile .
+
+Crear contenedor
+
+    docker build -t api-nachipa .
+
+
+    docker-compose up --build
+
+Contenedores activos
+    docker ps
+
+Detener contenedores activos
+    docker stop <container_id>
+
+Levantar el contenedor :
+
+    docker run -p 4500:4500 mi-app-nachipa
+
+
+Para volver a instalar un paquete de node y subirl para un contenedor
+
+    git add package.json package-lock.json
+    git commit -m "feat: added lodash"
+    git push
+
+Pero debo volver a contruir el contenedor
+
+    docker build -t mi-app
+
+
+
+Entra : 
+    http://localhost:4500
+
+

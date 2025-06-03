@@ -50,6 +50,18 @@ const userCourseSchema = new mongoose.Schema(
       default: '',
       maxlength: [250, 'Nota no debe exceder maximo de caracteres 250lim'],
     },
+    notifiedAboutExpiry: {
+      type: Boolean,
+      default: false,
+    },
+    expiryNotificationCount: {
+      type: Number,
+      default: 0,
+    },
+    lastNotificationDate: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

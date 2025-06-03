@@ -1,3 +1,26 @@
+# Archivos y carpetas del entorno
 .env
+.env.local
+
+# Node.js
 node_modules/
 package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Docker
+*.tar
+*.img
+*.iso
+.docker/
+docker-cache/
+data/
+volumes/
+
+# Documentos que no necesitas subir
+BIBLIADEV.md
+
+# Build / output
+dist/
+build/

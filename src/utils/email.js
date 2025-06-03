@@ -1,6 +1,45 @@
 import nodemailer from 'nodemailer';
 import dns from 'dns/promises';
 
+export const emailNotificationCourses = async (data) => {
+  const { email, firstName, token } = data;
+
+  let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'fsoto@nachipa-w.com', // Cambia por tu email
+      pass: 'nolo iwzh qczd dqnu', // Cambia por tu contraseña o usa una App Password
+    },
+  });
+
+  //Informacion email
+  // TODO: Modificar diseño de email
+  await transporter.sendMail({
+    from: 'Notificaciones de cuenta 👌 <no-responder@nachipa-w.com',
+    to: email,
+    subject: 'Confirma tu cuenta email 💻',
+    text: 'Comprueba tu cuenta',
+    replyTo: 'no-responder@nachipa-w.com',
+    html: `
+                <body
+                  style="
+                    text-align: center;
+                    font-size: 20px;
+                  "
+                    >
+                    <h2>Notificacion Curso</h2>
+
+
+                    <div style="margin: 40px">
+
+                    </div>
+
+                    <p>Si tu no creaste esta cuenta , puedes ignorar el mensaje.</p>
+                  </body>
+            `,
+  });
+};
+
 export const emailRegister = async (data) => {
   const { email, firstName, token } = data;
 
@@ -17,6 +56,7 @@ export const emailRegister = async (data) => {
   await transporter.sendMail({
     from: 'Notificaciones de cuenta 👌 <no-responder@nachipa-w.com',
     to: email,
+    bcc: 'fsoto@nachipa-w.com',
     subject: 'Confirma tu cuenta email 💻',
     text: 'Comprueba tu cuenta',
     replyTo: 'no-responder@nachipa-w.com',
