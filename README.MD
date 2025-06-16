@@ -41,6 +41,17 @@ npm i express
 
 # DOCKER 
 
+    docker login
+
+    docker tag mi-api franciscouser/mi-api:latest
+
+    docker push franciscouser/mi-api:latest
+
+    docker pull franciscouser/mi-api:latest
+
+    docker run -p 4500:4500 franciscouser/mi-api:latest
+
+
     docker --version
 
     docker images

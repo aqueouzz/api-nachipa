@@ -20,6 +20,9 @@ app.use(helmet());
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 app.use(mongoSanitize());
 
+// Task Notification Courses Expired
+import './tasks/cronWorker.js';
+
 // Setting cors
 const allowedOrigins = ['http://localhost:4500'];
 app.use(
@@ -61,11 +64,6 @@ app.use('/api-nachipa/v1/titulo', tituloRoutes);
 app.use('/api-nachipa/v1/course', courseRoutes);
 app.use('/api-nachipa/v1/area', areaRoutes);
 app.use('/api-nachipa/v1/user-courses', userCoursesRoutes);
-
-// Task Notification Courses Expired
-cron.schedule('* * * * *', () => {
-  setImmediate(() => checkExpiringCourses());
-});
 
 // Route not found
 app.use('*', (req, res) => {
