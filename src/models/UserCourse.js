@@ -31,11 +31,6 @@ const userCourseSchema = new mongoose.Schema(
       enum: ['Gestion', 'Operacion', 'Apoyo'],
       default: 'Gestion',
     },
-    boardingCardValidUntil: {
-      // vigencia libreta de embarco del usuario en ese curso
-      type: Date,
-      required: false,
-    },
     createdBY: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

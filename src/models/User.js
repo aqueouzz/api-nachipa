@@ -57,6 +57,15 @@ const userSchema = new mongoose.Schema(
       default: () => new mongoose.Types.ObjectId(),
       required: false,
     },
+    boardingCardValidUntil: {
+      // vigencia libreta de embarco del usuario en ese curso
+      type: Date,
+      required: false,
+    },
+    boardingCardValidUntilNotified: {
+      type: Boolean,
+      required: false,
+    },
     ubicationID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Ubication',

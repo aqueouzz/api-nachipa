@@ -7,6 +7,8 @@ dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 
+// console.log(process.env);
+
 const startServer = async () => {
   try {
     await db(process.env.MONGO_URI_DEV);
