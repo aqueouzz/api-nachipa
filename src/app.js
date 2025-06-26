@@ -6,8 +6,6 @@ import express from 'express';
 import morgan from 'morgan';
 import mongoSanitize from 'express-mongo-sanitize';
 import cors from 'cors';
-import cron from 'node-cron';
-import checkExpiringCourses from './tasks/checkExpiringCourses.js';
 
 // Initializing the app with express
 const app = express();
