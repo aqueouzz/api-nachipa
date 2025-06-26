@@ -1,3 +1,6 @@
+// Load env variables
+dotenv.config();
+
 // Dependencies
 import 'express-async-errors';
 import app from './app.js';
@@ -8,14 +11,10 @@ import chalk from 'chalk';
 
 import db from './config/db.js';
 
-// Load env variables
-dotenv.config();
-
 // Port
 const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {
-  // app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
   try {
     // Connect to database
     await db(process.env.MONGO_URI_DEV);

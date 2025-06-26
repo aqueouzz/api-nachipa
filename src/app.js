@@ -6,6 +6,7 @@ import express from 'express';
 import morgan from 'morgan';
 import mongoSanitize from 'express-mongo-sanitize';
 import cors from 'cors';
+import xss from 'xss-clean';
 
 // Initializing the app with express
 const app = express();
@@ -14,7 +15,18 @@ const app = express();
 app.use(express.json());
 
 app.use(helmet());
-app.use(morgan('dev'));
+if (process.env.NODE_ENV === 'production') {
+  // 🟢 Producción: logs a archivo
+  const accessLogStream = fs.createWriteStream(
+    path.join(__dirname, 'logs', 'access.log'),
+    { flags: 'a' }
+  );
+  app.use(morgan('combined', { stream: accessLogStream }));
+} else {
+  // 🔵 Desarrollo: logs coloridos en consola
+  app.use(morgan('dev'));
+}
+app.use(xss());
 
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 app.use(mongoSanitize());
