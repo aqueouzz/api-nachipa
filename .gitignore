@@ -20,6 +20,8 @@ volumes/
 
 # Documentos que no necesitas subir
 BIBLIADEV.md
+diagrama.excalidraw
+
 
 # Build / output
 dist/
