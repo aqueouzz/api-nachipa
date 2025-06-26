@@ -160,6 +160,7 @@ userSchema.methods.createToken = function () {
   const token = jwt.sign(
     {
       id: this._id,
+      email: this.email,
       role: this.internalRol,
       businessID: this.businessID?.toString(),
     },

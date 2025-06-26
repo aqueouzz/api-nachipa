@@ -5,6 +5,7 @@ import path from 'path';
 
 // Importar modelos
 import User from '../models/User.js';
+import logger from '../utils/logger.js';
 
 // Utils
 import { emailRegister, resetPassword } from '../utils/email.js';
@@ -134,6 +135,7 @@ export const signIn = async (req, res) => {
   const isPassword = await user.validatePassword(password);
 
   if (!isPassword) {
+    logger.error(`signIn : User ${user.email} failed login`);
     throw new UnauthenticatedError('Clave incorrecta!');
   }
 
@@ -147,6 +149,8 @@ export const signIn = async (req, res) => {
     sameSite: 'Strict', // Previene ataques CSRF
     maxAge: 3600000, // 1 hora
   });
+
+  logger.info(`signIn : User ${user.email} logged in`);
 
   res.status(StatusCodes.OK).json({ user: user.firstName, token: token });
 };
@@ -214,7 +218,9 @@ export const newPassword = async (req, res) => {
   if (user) {
     user.password = password;
     user.token = '';
-
+    logger.info(
+      `Reset password: Usuario ${user.email} (ID: ${user.id}) ha cambiado su contraseña`
+    );
     await user.save();
     res.json({ msg: 'Usuario modificado correctamente' });
   } else {
@@ -224,6 +230,12 @@ export const newPassword = async (req, res) => {
 
 //🚀 : Sign out account
 export const signout = (req, res) => {
+  const { id, email, businessID } = req.user;
+
+  logger.info(
+    `Logout: Usuario ${email} (ID: ${id} Empresa: ${businessID}) cerró sesión`
+  );
+
   res.clearCookie('t');
 
   delete req.headers.authorization;

@@ -186,6 +186,6 @@ router.route('/confirmed-account/:token').get(confirmationAccount);
 router.route('/reset-password').post(forgotPassword);
 router.route('/reset-password/:token').post(newPassword);
 router.route('/login').post(signIn);
-router.route('/signout').get(signout);
+router.route('/signout').get(authenticateToken, signout);
 
 export default router;
