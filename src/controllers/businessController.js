@@ -121,7 +121,7 @@ export const getAllBusiness = async (req, res) => {
   });
 };
 
-// 🚀 : Update a new Business
+// 🚀 : Update a Business
 export const updateBusiness = async (req, res) => {
   const userRole = req.user.role;
   const business = await Business.findById(req.params.id);

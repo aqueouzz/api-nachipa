@@ -1,12 +1,15 @@
+// Models
 import Area from '../models/Area.js';
 import Ubication from '../models/Ubication.js';
 import User from '../models/User.js';
-import StatusCodes from 'http-status-codes';
-import { BadRequestError, ForbiddenError } from '../error/errorResponse.js';
-import { validatePaginationParams } from '../utils/validatePagination.js';
 import Business from '../models/Business.js';
 
-// Manejo los errores desde cada metodo en este controlador
+// Dependencies
+import StatusCodes from 'http-status-codes';
+import { validatePaginationParams } from '../utils/validatePagination.js';
+
+// Errors
+import { BadRequestError, ForbiddenError } from '../error/errorResponse.js';
 
 // 🚀 : Crear un área
 export const createArea = async (req, res) => {

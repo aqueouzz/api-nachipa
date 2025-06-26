@@ -1,8 +1,13 @@
+// Dependencies
 import path from 'path';
-import User from '../models/User.js';
 import { validatePaginationParams } from '../utils/validatePagination.js';
 import StatusCodes from 'http-status-codes';
 import fs from 'fs/promises';
+
+// Models
+import User from '../models/User.js';
+
+// Errors
 import { BadRequestError, ForbiddenError } from '../error/errorResponse.js';
 
 // 🚀 : Metodo GET ALLS
@@ -284,7 +289,6 @@ export const deleteUser = async (req, res) => {
 };
 
 // 🚀 : Otros metodos
-
 // Funcion que devuelve un limite de usuarios
 export const getUserByLimit = async (req, res) => {
   const { limit } = req.query;

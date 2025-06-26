@@ -1,10 +1,11 @@
 // Dependencies
 import { validatePaginationParams } from '../utils/validatePagination.js';
 import StatusCodes from 'http-status-codes';
+
 // Models
 import Titulo from '../models/Titulo.js';
 
-// Create a new Titulo
+//🚀 : Create a new Titulo
 export const createTitulo = async (req, res) => {
   // Creamos un objeto response con los datos que vienen del body
   const response = {
@@ -27,7 +28,7 @@ export const createTitulo = async (req, res) => {
   });
 };
 
-// Get All Titulos
+//🚀 : Get All Titulos
 export const getAllTitulos = async (req, res) => {
   // 1.- Buscamos los titulos creados por el usuario superadmin
   // ya que otro usuario no puede realizar oepraciones CRUD sobre los titulos
@@ -100,7 +101,7 @@ export const getAllTitulos = async (req, res) => {
   });
 };
 
-// Get By ID Titulo
+//🚀 : Get By ID Titulo
 export const getByID = async (req, res) => {
   const titulo = await Titulo.findById(req.params.id).select(
     '-__v -_id -createdAt -updatedAt -__v -createdAt -updatedAt'
@@ -113,7 +114,7 @@ export const getByID = async (req, res) => {
   });
 };
 
-// Update Titulo
+//🚀 : Update Titulo
 export const updateTitulo = async (req, res) => {
   await Titulo.findByIdAndUpdate(
     req.params.id,
@@ -135,7 +136,7 @@ export const updateTitulo = async (req, res) => {
   });
 };
 
-// Delete Titulo
+//🚀 : Delete Titulo
 export const deleteTitulo = async (req, res) => {
   await Titulo.findByIdAndDelete(req.params.id);
 

@@ -2,6 +2,7 @@
 import { StatusCodes } from 'http-status-codes';
 import { validatePaginationParams } from '../utils/validatePagination.js';
 import mongoose from 'mongoose';
+
 // Models
 import UserCourse from '../models/UserCourse.js';
 

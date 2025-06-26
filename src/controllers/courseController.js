@@ -104,7 +104,7 @@ export const getCourse = async (req, res) => {
   });
 };
 
-// 🚀 Update  Course
+// 🚀 Update Course
 export const updateCourse = async (req, res) => {
   const course = await Course.findByIdAndUpdate(
     req.params.id,
@@ -127,7 +127,7 @@ export const updateCourse = async (req, res) => {
   });
 };
 
-// 🚀 Delete  Course
+// 🚀 Delete Course
 export const deleteCourse = async (req, res) => {
   const course = await Course.findByIdAndDelete(req.params.id);
   res.status(StatusCodes.OK).json({

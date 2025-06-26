@@ -15,7 +15,7 @@ import {
   BadRequestError,
 } from '../error/errorResponse.js';
 
-//Create a new user
+//🚀 : Create a new user
 export const registerUser = async (req, res, next) => {
   const totalUsers = await User.countDocuments();
 
@@ -113,7 +113,7 @@ export const registerUser = async (req, res, next) => {
   }
 };
 
-//Sign in account
+//🚀 : Sign in account
 export const signIn = async (req, res) => {
   const { email, password } = req.body;
 
@@ -151,7 +151,7 @@ export const signIn = async (req, res) => {
   res.status(StatusCodes.OK).json({ user: user.firstName, token: token });
 };
 
-//Confimation account
+//🚀 : Confimation account
 export const confirmationAccount = async (req, res) => {
   const { token } = req.params;
 
@@ -178,7 +178,7 @@ export const confirmationAccount = async (req, res) => {
     .json({ success: true, message: 'Cuenta confirmada correctamente' });
 };
 
-//Forgot password
+//🚀 : Forgot password
 export const forgotPassword = async (req, res) => {
   const { email } = req.body;
 
@@ -205,7 +205,7 @@ export const forgotPassword = async (req, res) => {
   });
 };
 
-//Reset password
+//🚀 : Reset password
 export const newPassword = async (req, res) => {
   const { token } = req.params;
   const { password } = req.body;
@@ -222,7 +222,7 @@ export const newPassword = async (req, res) => {
   }
 };
 
-//Sign out account
+//🚀 : Sign out account
 export const signout = (req, res) => {
   res.clearCookie('t');
 
