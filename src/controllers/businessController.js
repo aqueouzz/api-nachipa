@@ -1,5 +1,6 @@
 // Dependencies
 import { StatusCodes } from 'http-status-codes';
+import { validatePaginationParams } from '../utils/validatePagination.js';
 
 // Models
 import Business from '../models/Business.js';
@@ -46,62 +47,88 @@ export const getById = async (req, res) => {
 
 // 🚀 : Get All Business
 export const getAllBusiness = async (req, res) => {
-  const business = await Business.find({ _id: req.user.businessID });
+  const { q, order, status, startDate, endDate } = req.query;
+
+  const { page, limit, skip } = validatePaginationParams(req.query);
+
+  // Construir query base
+  const query = {};
+
+  // Si hay búsqueda, armar condiciones para nombre o apellido
+  if (q && q.trim() !== '') {
+    const tokens = q.trim().split(/\s+/);
+    const conditions = tokens.map((token) => {
+      const regex = new RegExp(token, 'i');
+      return {
+        $or: [{ name: regex }],
+      };
+    });
+    query.$and = conditions;
+  }
+
+  // 🔍 Filtro por estado activo/inactivo
+  if (status === 'activo') {
+    query.state = true;
+  } else if (status === 'inactivo') {
+    query.state = false;
+  }
+
+  // 🔍 Filtro por fechas (createdAt)
+  if (startDate || endDate) {
+    query.createdAt = {};
+
+    if (startDate) {
+      query.createdAt.$gte = new Date(startDate);
+    }
+
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999); // Fin del día
+      query.createdAt.$lte = end;
+    }
+  }
+
+  // Determinar orden (ascendente por defecto)
+  const orderValue = order?.toLowerCase() === 'desc' ? -1 : 1;
+
+  const business = await Business.find(query)
+    .sort({ name: orderValue })
+    .skip(skip)
+    .limit(limit);
 
   if (business.countDocuments === 0) {
     throw new BadRequestError('No hay empresas registradas');
   }
 
+  const totalBusiness = await Business.countDocuments(query);
+
   if (req.user.role === 'superadmin') {
-    const businessAll = await Business.find();
+    // const businessAll = await Business.find();
     return res.status(StatusCodes.OK).json({
       success: true,
       msg: 'Lista de empresas',
-      data: businessAll,
-      count: businessAll.length,
+      count: business.length,
+      data: business,
+      total: totalBusiness,
+      totalPages: Math.ceil(totalBusiness / limit),
+      currentPage: parseInt(page),
     });
   }
 
   res.status(StatusCodes.OK).json({
     success: true,
     msg: 'Lista de empresas',
-    count: business.length,
-    data: business,
-    // total,
-    // page,
-    // limit,
-    // 'msg: 'Lista de empresas
   });
-
-  // const { page = 1, limit = 10 } = req.query;
-  // const skip = (page - 1) * limit;
-  // const total = await Business.countDocuments({});
-  // const business = await Business.find({}).skip(skip).limit(limit);
-  // res.status(200).json({
-  //     msg: 'Lista de empresas',
-  //     total,
-  //     page,
-  //     limit,
-  //     business,
-  // });
 };
 
 // 🚀 : Update a new Business
 export const updateBusiness = async (req, res) => {
-  // if (req.user.businessID !== id.toString()) {
-  //   throw new BadRequestError('No tienes permiso para ver esta empresa');
-  // }
   const userRole = req.user.role;
   const business = await Business.findById(req.params.id);
 
   if (!business) {
     throw new BadRequestError('No se encontro la empresa con esa id');
   }
-
-  // // Validar acceso
-  // if (userRole !== 'superadmin' && userBusinessID !== targetBusinessID) {
-  //   throw new BadRequestError('No tienes permiso para modificar esta empresa');
-  // }
 
   const businessNew = await Business.findByIdAndUpdate(
     req.params.id,

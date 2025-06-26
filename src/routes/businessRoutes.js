@@ -26,7 +26,7 @@ const router = Router();
 router.get(
   '/',
   authenticateToken,
-  authorizeAction('read_own', 'business'),
+  authorizeAction('read', 'business'),
   getAllBusiness
 );
 

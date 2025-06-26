@@ -1,5 +1,7 @@
 // Dependencies
 import StatusCodes from 'http-status-codes';
+import { validatePaginationParams } from '../utils/validatePagination.js';
+
 // Models
 import Rol from '../models/Rol.js';
 
@@ -19,7 +21,54 @@ export const createRol = async (req, res) => {
 
 // 🚀 : Get Alls Rol
 export const getAllRoles = async (req, res) => {
-  const roles = await Rol.find();
+  const { q, order, status, startDate, endDate } = req.query;
+
+  const { page, limit, skip } = validatePaginationParams(req.query);
+
+  // Construir query base
+  const query = {};
+
+  // Si hay búsqueda, armar condiciones para nombre o apellido
+  if (q && q.trim() !== '') {
+    const tokens = q.trim().split(/\s+/);
+    const conditions = tokens.map((token) => {
+      const regex = new RegExp(token, 'i');
+      return {
+        $or: [{ name: regex }],
+      };
+    });
+    query.$and = conditions;
+  }
+
+  // 🔍 Filtro por estado activo/inactivo
+  if (status === 'activo') {
+    query.state = true;
+  } else if (status === 'inactivo') {
+    query.state = false;
+  }
+
+  // 🔍 Filtro por fechas (createdAt)
+  if (startDate || endDate) {
+    query.createdAt = {};
+
+    if (startDate) {
+      query.createdAt.$gte = new Date(startDate);
+    }
+
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999); // Fin del día
+      query.createdAt.$lte = end;
+    }
+  }
+
+  // Determinar orden (ascendente por defecto)
+  const orderValue = order?.toLowerCase() === 'desc' ? -1 : 1;
+
+  const roles = await Rol.find(query)
+    .sort({ name: orderValue })
+    .skip(skip)
+    .limit(limit);
 
   const rolCount = await Rol.countDocuments();
 
@@ -35,6 +84,8 @@ export const getAllRoles = async (req, res) => {
     message: 'Roles obtenidos exitosamente',
     count: roles.length,
     data: roles,
+    totalPages: Math.ceil(rolCount / limit),
+    currentPage: parseInt(page),
   });
 };
 

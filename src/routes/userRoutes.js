@@ -14,6 +14,7 @@ import {
   getById,
   updateUser,
   deleteUser,
+  getUserByLimit,
 } from '../controllers/userController.js';
 
 // Middleware
@@ -24,7 +25,13 @@ import { validateObjectIdsAndExistence } from '../middlewares/validationsUserMid
 router
   .route('/')
   .all(authenticateToken)
-  .get(authorizeAction('read_own', 'user'), getAllUsers);
+  .get(authorizeAction('read_own', 'user'), getAllUsers)
+  .get(authorizeAction('read_own', 'user'), getUserByLimit);
+
+router
+  .route('/by-limit')
+  .all(authenticateToken)
+  .get(authorizeAction('read_own', 'user'), getUserByLimit);
 
 router.route('/:id').get(
   validateObjectIdsAndExistence([
@@ -48,6 +55,7 @@ router
     ]),
     updateUser
   );
+
 router
   .route('/:id')
   .delete(

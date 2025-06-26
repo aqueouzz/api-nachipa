@@ -3,6 +3,7 @@ import Ubication from '../models/Ubication.js';
 import User from '../models/User.js';
 import StatusCodes from 'http-status-codes';
 import { BadRequestError, ForbiddenError } from '../error/errorResponse.js';
+import { validatePaginationParams } from '../utils/validatePagination.js';
 import Business from '../models/Business.js';
 
 // Manejo los errores desde cada metodo en este controlador
@@ -68,7 +69,14 @@ export const createArea = async (req, res) => {
 };
 
 // 🚀 : Obtener todas las áreas
+// * * En el select se filtra , busca los campos que especifique el usuario
 export const getAllAreas = async (req, res) => {
+  const { q, order, status, startDate, endDate } = req.query;
+
+  const { page, limit, skip } = validatePaginationParams(req.query);
+
+  // Construir query base
+  let query = {};
   // 1.- Validar que el usuario exista y tenga una empresa asignada
   const businessExists = await Business.findById(req.user.businessID);
 
@@ -78,21 +86,63 @@ export const getAllAreas = async (req, res) => {
     );
   }
 
-  let areas;
+  // Si hay búsqueda, armar condiciones para nombre o apellido
+  if (q && q.trim() !== '') {
+    const tokens = q.trim().split(/\s+/);
+    const conditions = tokens.map((token) => {
+      const regex = new RegExp(token, 'i');
+      return {
+        $or: [{ name: regex }],
+      };
+    });
+    query.$and = conditions;
+  }
+
+  // let areas;
+
+  // 🔍 Filtro por estado activo/inactivo
+  if (status === 'activo') {
+    query.state = true;
+  } else if (status === 'inactivo') {
+    query.state = false;
+  }
+
+  // 🔍 Filtro por fechas (createdAt)
+  if (startDate || endDate) {
+    query.createdAt = {};
+
+    if (startDate) {
+      query.createdAt.$gte = new Date(startDate);
+    }
+
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999); // Fin del día
+      query.createdAt.$lte = end;
+    }
+  }
+
+  // Determinar orden (ascendente por defecto)
+  const orderValue = order?.toLowerCase() === 'desc' ? -1 : 1;
+
+  const areas = await Area.find(query)
+    .sort({ name: orderValue })
+    .skip(skip)
+    .limit(limit);
 
   const ubications = await Ubication.find({
     businessID: req.user.businessID,
   }).select('_id');
 
   if (req.user.role === 'superadmin') {
-    areas = await Area.find();
+    query = areas;
   } else {
-    areas = await Area.find({ ubicationID: { $in: ubications } });
+    query = await Area.find({ ubicationID: { $in: ubications } });
   }
 
-  const areasCount = await Area.countDocuments();
+  const totalArea = await Area.countDocuments();
 
-  if (areasCount === 0) {
+  if (totalArea === 0) {
     return res.status(StatusCodes.NOT_FOUND).json({
       success: false,
       msg: 'No se encontraron áreas registrados',
@@ -102,8 +152,9 @@ export const getAllAreas = async (req, res) => {
   res.status(StatusCodes.OK).json({
     success: true,
     msg: 'Áreas obtenidas correctamente',
-    count: areas.length,
-    data: areas,
+    count: query.length,
+    data: query,
+    totalAreas: totalArea,
   });
 };
 

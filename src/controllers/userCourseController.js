@@ -1,8 +1,12 @@
 // Dependencies
 import { StatusCodes } from 'http-status-codes';
-
+import { validatePaginationParams } from '../utils/validatePagination.js';
+import mongoose from 'mongoose';
 // Models
 import UserCourse from '../models/UserCourse.js';
+
+// Errors
+import { BadRequestError } from '../error/errorResponse.js';
 
 // 🚀 : Asignar cursos a usario
 export const assingCourseToUser = async (req, res) => {
@@ -48,27 +52,89 @@ export const assingCourseToUser = async (req, res) => {
 
 // 🚀 : Obtener los cursos de un usuario
 export const getUserCourses = async (req, res) => {
+  const { q, order, status, startDate, endDate } = req.query;
+  const { page, limit, skip } = validatePaginationParams(req.query);
+
   const { id } = req.params;
+  const userId = new mongoose.Types.ObjectId(id);
 
-  const userCourses = await UserCourse.find({ userID: id })
-    .populate({
-      path: 'courseID',
-      // match : { status: 'Completado' },
-      select: 'name description dictoCourse',
-      options: {
-        limit: 5,
+  // Determinar orden (ascendente por defecto)
+  const orderValue = order?.toLowerCase() === 'desc' ? -1 : 1;
+
+  const pipeline = [
+    // Etapas iniciales (igual que antes)
+    { $match: { userID: userId } },
+    {
+      $lookup: {
+        from: 'courses',
+        localField: 'courseID',
+        foreignField: '_id',
+        as: 'courseDetails',
       },
-    })
-    .select('-createdAt -updatedAt -createdBy -__v -status');
+    },
+    { $unwind: '$courseDetails' },
 
-  res.status(StatusCodes.OK).json({
-    success: true,
-    msg: 'Cursos obtenidos correctamente',
-    count: userCourses.length,
-    data: userCourses,
-  });
+    ...(q
+      ? [
+          {
+            $match: {
+              'courseDetails.name': { $regex: q, $options: 'i' },
+            },
+          },
+        ]
+      : []),
+
+    { $sort: { 'courseDetails.name': orderValue } },
+
+    // Etapa $facet modificada
+    {
+      $facet: {
+        paginatedResults: [
+          { $skip: skip },
+          { $limit: limit },
+          {
+            $project: {
+              _id: 0,
+              courseID: '$courseDetails._id',
+              name: '$courseDetails.name',
+              description: '$courseDetails.description',
+              dictoCourse: '$courseDetails.dictoCourse',
+            },
+          },
+        ],
+        totalCount: [{ $count: 'total' }],
+      },
+    },
+
+    // Nuevas etapas para transformar el resultado
+    { $unwind: '$totalCount' },
+    {
+      $project: {
+        msg: 'Cursos asignados a usuario',
+        data: '$paginatedResults',
+        total: '$totalCount.total',
+        currentPage: { $literal: parseInt(page) },
+        totalPages: {
+          $ceil: {
+            $divide: ['$totalCount.total', limit],
+          },
+        },
+      },
+    },
+  ];
+
+  // Ejecutar la consulta
+  const [result] = await UserCourse.aggregate(pipeline);
+
+  res.status(StatusCodes.OK).json(
+    result || {
+      data: [],
+      total: 0,
+      page: parseInt(page),
+      totalPages: 0,
+    }
+  );
 };
-
 // 🚀 : Updatear un curso de un usuario
 export const updatedUserCourse = async (req, res) => {
   const { id } = req.params;

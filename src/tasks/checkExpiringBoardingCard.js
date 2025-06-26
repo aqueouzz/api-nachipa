@@ -18,7 +18,7 @@ const checkExpiringBoardingCard = async () => {
   const monthBeforeExpiryNotify =
     parseInt(process.env.MONTHS_BEFORE_EXPIRY_NOTIFY) || 1;
 
-  console.log(monthBeforeExpiryNotify);
+  // console.log(monthBeforeExpiryNotify);
 
   try {
     // Truncar a medianoche
@@ -30,7 +30,7 @@ const checkExpiringBoardingCard = async () => {
     const startNotifyDate = new Date(today);
     startNotifyDate.setMonth(today.getMonth() + monthBeforeExpiryNotify);
 
-    console.log(startNotifyDate);
+    // console.log(startNotifyDate);
 
     const users = await User.find({
       boardingCardValidUntil: { $lte: startNotifyDate, $gte: today },
@@ -38,7 +38,7 @@ const checkExpiringBoardingCard = async () => {
     });
 
     for (const user of users) {
-      console.log(user.boardingCardValidUntil);
+      // console.log(user.boardingCardValidUntil);
 
       // if (!user.email || !user.firstName) return;
 

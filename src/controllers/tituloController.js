@@ -1,4 +1,5 @@
 // Dependencies
+import { validatePaginationParams } from '../utils/validatePagination.js';
 import StatusCodes from 'http-status-codes';
 // Models
 import Titulo from '../models/Titulo.js';
@@ -30,10 +31,57 @@ export const createTitulo = async (req, res) => {
 export const getAllTitulos = async (req, res) => {
   // 1.- Buscamos los titulos creados por el usuario superadmin
   // ya que otro usuario no puede realizar oepraciones CRUD sobre los titulos
+  const { q, order, status, startDate, endDate } = req.query;
 
-  const titulos = await Titulo.find({ createdBy: req.user.id }).select(
-    '-__v -_id -createdAt -updatedAt -__v -createdAt -updatedAt'
-  );
+  const { page, limit, skip } = validatePaginationParams(req.query);
+
+  // Construir query base
+  const query = {};
+
+  // Si hay búsqueda, armar condiciones para nombre o apellido
+  if (q && q.trim() !== '') {
+    const tokens = q.trim().split(/\s+/);
+    const conditions = tokens.map((token) => {
+      const regex = new RegExp(token, 'i');
+      return {
+        $or: [{ name: regex }],
+      };
+    });
+    query.$and = conditions;
+  }
+
+  // 🔍 Filtro por estado activo/inactivo
+  if (status === 'activo') {
+    query.state = true;
+  } else if (status === 'inactivo') {
+    query.state = false;
+  }
+
+  // 🔍 Filtro por fechas (createdAt)
+  if (startDate || endDate) {
+    query.createdAt = {};
+
+    if (startDate) {
+      query.createdAt.$gte = new Date(startDate);
+    }
+
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999); // Fin del día
+      query.createdAt.$lte = end;
+    }
+  }
+
+  // Determinar orden (ascendente por defecto)
+  const orderValue = order?.toLowerCase() === 'desc' ? -1 : 1;
+
+  query.createdBy = req.user.id;
+
+  const titulos = await Titulo.find(query)
+    .sort({ name: orderValue })
+    .skip(skip)
+    .limit(limit)
+    .select('-__v -_id -createdAt -updatedAt -__v -createdAt -updatedAt');
 
   const titulosCount = await Titulo.countDocuments();
 

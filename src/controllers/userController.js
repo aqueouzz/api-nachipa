@@ -1,26 +1,78 @@
 import path from 'path';
 import User from '../models/User.js';
+import { validatePaginationParams } from '../utils/validatePagination.js';
 import StatusCodes from 'http-status-codes';
 import fs from 'fs/promises';
 import { BadRequestError, ForbiddenError } from '../error/errorResponse.js';
 
 // 🚀 : Metodo GET ALLS
 export const getAllUsers = async (req, res) => {
-  // ✅ Buscamos el ID de la empresa del usuario autenticado
-  let users;
+  const { q, order, status, startDate, endDate } = req.query;
 
+  const { page, limit, skip } = validatePaginationParams(req.query);
+
+  // Construir query base
+  const query = {};
+
+  // Filtrar por empresa si no es superadmin
   if (req.user.role !== 'superadmin') {
-    users = await User.find({ businessID: req.user.businessID }).select(
-      '-password -_id -token -confirmed'
-    );
-  } else {
-    users = await User.find().select('-password -_id -token -confirmed');
+    query.businessID = req.user.businessID;
   }
+
+  // Si hay búsqueda, armar condiciones para nombre o apellido
+  if (q && q.trim() !== '') {
+    const tokens = q.trim().split(/\s+/);
+    const conditions = tokens.map((token) => {
+      const regex = new RegExp(token, 'i');
+      return {
+        $or: [{ firstName: regex }, { lastName: regex }],
+      };
+    });
+    query.$and = conditions;
+  }
+
+  // 🔍 Filtro por estado activo/inactivo
+  if (status === 'activo') {
+    query.state = true;
+  } else if (status === 'inactivo') {
+    query.state = false;
+  }
+
+  // 🔍 Filtro por fechas (createdAt)
+  if (startDate || endDate) {
+    query.createdAt = {};
+
+    if (startDate) {
+      query.createdAt.$gte = new Date(startDate);
+    }
+
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999); // Fin del día
+      query.createdAt.$lte = end;
+    }
+  }
+
+  // Determinar orden (ascendente por defecto)
+  const orderValue = order?.toLowerCase() === 'desc' ? -1 : 1;
+
+  // Crear la consulta con filtros
+
+  const users = await User.find(query)
+    .select('-password -_id -token -confirmed')
+    .sort({ firstName: orderValue })
+    .skip(skip)
+    .limit(limit);
+
+  const totalUsers = await User.countDocuments(query);
 
   res.status(StatusCodes.CREATED).json({
     success: true,
-    count: users.length,
     data: users,
+    count: users.length,
+    total: totalUsers,
+    totalPages: Math.ceil(totalUsers / limit),
+    currentPage: parseInt(page),
   });
 };
 
@@ -228,5 +280,22 @@ export const deleteUser = async (req, res) => {
   res.status(StatusCodes.OK).json({
     success: true,
     msg: 'User deleted',
+  });
+};
+
+// 🚀 : Otros metodos
+
+// Funcion que devuelve un limite de usuarios
+export const getUserByLimit = async (req, res) => {
+  const { limit } = req.query;
+
+  // console.log(limit);
+
+  const users = await User.find().limit(limit);
+
+  res.status(StatusCodes.OK).json({
+    success: true,
+    count: users.length,
+    data: users,
   });
 };
