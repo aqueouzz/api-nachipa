@@ -12,14 +12,16 @@ const app = express();
 
 // Middlewares allows json format
 app.use(express.json());
-// Is used to log http requests arriving at my server - options ['dev', 'tiny']
-app.use(morgan('dev'));
+
 app.use(helmet());
+app.use(morgan('dev'));
+
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 app.use(mongoSanitize());
 
 // Task Notification Courses Expired
 import './tasks/cronWorker.js';
+import swagger from './config/swagger.js';
 
 // Setting cors
 const allowedOrigins = ['http://localhost:4500'];
@@ -62,6 +64,8 @@ app.use('/api-nachipa/v1/titulo', tituloRoutes);
 app.use('/api-nachipa/v1/course', courseRoutes);
 app.use('/api-nachipa/v1/area', areaRoutes);
 app.use('/api-nachipa/v1/user-courses', userCoursesRoutes);
+
+swagger(app);
 
 // Route not found
 app.use('*', (req, res) => {

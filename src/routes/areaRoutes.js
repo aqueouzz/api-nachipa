@@ -21,6 +21,128 @@ import { validateObjectIdsAndExistence } from '../middlewares/validationsUserMid
 
 // Create a new router instance
 const router = Router();
+/**
+ * @swagger
+ * /area:
+ *   get:
+ *     summary: Obtener todas las áreas
+ *     tags:
+ *       - Áreas
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de áreas obtenida correctamente
+ */
+
+/**
+ * @swagger
+ * /area:
+ *   post:
+ *     summary: Crear una nueva área
+ *     tags:
+ *       - Áreas
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Recursos Humanos
+ *               description:
+ *                 type: string
+ *                 example: Departamento encargado de personal
+ *     responses:
+ *       201:
+ *         description: Área creada exitosamente
+ */
+
+/**
+ * @swagger
+ * /area/{id}:
+ *   get:
+ *     summary: Obtener un área por ID
+ *     tags:
+ *       - Áreas
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID del área
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Área encontrada exitosamente
+ *       404:
+ *         description: Área no encontrada
+ */
+
+/**
+ * @swagger
+ * /area/{id}:
+ *   patch:
+ *     summary: Actualizar un área por ID
+ *     tags:
+ *       - Áreas
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID del área
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Área actualizada correctamente
+ *       400:
+ *         description: Datos inválidos
+ *       404:
+ *         description: Área no encontrada
+ */
+
+/**
+ * @swagger
+ * /area/{id}:
+ *   delete:
+ *     summary: Eliminar un área por ID
+ *     tags:
+ *       - Áreas
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID del área
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Área eliminada correctamente
+ *       404:
+ *         description: Área no encontrada
+ */
 
 router
   .route('/')

@@ -21,6 +21,122 @@ import { validateObjectIdsAndExistence } from '../middlewares/validationsUserMid
 import { validateStatus } from '../middlewares/otherValidationInputModelMiddleware.js';
 
 const router = Router();
+/**
+ * @swagger
+ * tags:
+ *   - name: Cursos de usuario
+ *     description: Asignación y gestión de cursos por usuario
+ */
+
+/**
+ * @swagger
+ * /assign:
+ *   post:
+ *     summary: Asignar un curso a un usuario
+ *     tags: [Cursos de usuario]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - userID
+ *               - courseID
+ *               - status
+ *             properties:
+ *               userID:
+ *                 type: string
+ *                 example: 60f7c4d5b25c1a3a30d0e7a2
+ *               courseID:
+ *                 type: string
+ *                 example: 60f7c4d5b25c1a3a30d0e7a9
+ *               status:
+ *                 type: string
+ *                 enum: [activo, inactivo, completado]
+ *                 example: activo
+ *     responses:
+ *       201:
+ *         description: Curso asignado correctamente al usuario
+ */
+
+/**
+ * @swagger
+ * /assign/{id}:
+ *   get:
+ *     summary: Obtener los cursos asignados de un usuario
+ *     tags: [Cursos de usuario]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID del usuario
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Cursos del usuario obtenidos correctamente
+ *       404:
+ *         description: Usuario no encontrado o sin cursos asignados
+ */
+
+/**
+ * @swagger
+ * /assign/{id}:
+ *   patch:
+ *     summary: Actualizar el estado de un curso asignado a un usuario
+ *     tags: [Cursos de usuario]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID de la asignación de curso (userCourse)
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [activo, inactivo, completado]
+ *                 example: completado
+ *     responses:
+ *       200:
+ *         description: Asignación actualizada correctamente
+ *       404:
+ *         description: Asignación no encontrada
+ */
+
+/**
+ * @swagger
+ * /assign/{id}:
+ *   delete:
+ *     summary: Eliminar una asignación de curso a usuario
+ *     tags: [Cursos de usuario]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID de la asignación (userCourse)
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Asignación eliminada correctamente
+ *       404:
+ *         description: Asignación no encontrada
+ */
 
 router
   .route('/assign')

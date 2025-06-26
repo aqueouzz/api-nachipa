@@ -19,6 +19,141 @@ import { authorizeAction } from '../middlewares/authorizedMiddleware.js';
 import { validateObjectIdsAndExistence } from '../middlewares/validationsUserMiddleware.js';
 
 const router = Router();
+/**
+ * @swagger
+ * tags:
+ *   - name: Cursos
+ *     description: Endpoints para gestionar cursos
+ */
+
+/**
+ * @swagger
+ * /course:
+ *   post:
+ *     summary: Crear un nuevo curso
+ *     tags: [Cursos]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - description
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: Introducción a Node.js
+ *               description:
+ *                 type: string
+ *                 example: Curso básico para aprender Node.js
+ *               duration:
+ *                 type: number
+ *                 example: 30
+ *               level:
+ *                 type: string
+ *                 example: Principiante
+ *     responses:
+ *       201:
+ *         description: Curso creado exitosamente
+ */
+
+/**
+ * @swagger
+ * /course:
+ *   get:
+ *     summary: Obtener todos los cursos
+ *     tags: [Cursos]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de cursos obtenida correctamente
+ */
+
+/**
+ * @swagger
+ * /course/{id}:
+ *   get:
+ *     summary: Obtener un curso por ID
+ *     tags: [Cursos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID del curso
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Curso encontrado
+ *       404:
+ *         description: Curso no encontrado
+ */
+
+/**
+ * @swagger
+ * /course/{id}:
+ *   patch:
+ *     summary: Actualizar un curso
+ *     tags: [Cursos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID del curso a actualizar
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               duration:
+ *                 type: number
+ *               level:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Curso actualizado correctamente
+ *       404:
+ *         description: Curso no encontrado
+ */
+
+/**
+ * @swagger
+ * /course/{id}:
+ *   delete:
+ *     summary: Eliminar un curso
+ *     tags: [Cursos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID del curso a eliminar
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Curso eliminado exitosamente
+ *       404:
+ *         description: Curso no encontrado
+ */
 
 router
   .route('/')
