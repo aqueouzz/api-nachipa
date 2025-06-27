@@ -55,8 +55,20 @@ const router = Router();
  *                 example: 60f7c4d5b25c1a3a30d0e7a9
  *               status:
  *                 type: string
- *                 enum: [activo, inactivo, completado]
- *                 example: activo
+ *                 example: false
+ *               expirationDate:
+ *                 type: date
+ *                 example: 2025-06-12
+ *               validNavigationalGuard:
+ *                 type: boolean
+ *                 example: false
+ *               managementOrOperation:
+ *                 type: string
+ *                 enum: ['Gestion', 'Operacion', 'Apoyo']
+ *                 example: Gestion
+ *               notes:
+ *                 type: string
+ *                 example: usaurio con su curso
  *     responses:
  *       201:
  *         description: Curso asignado correctamente al usuario

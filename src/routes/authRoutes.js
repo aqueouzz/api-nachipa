@@ -37,19 +37,29 @@ import { authenticateToken } from '../middlewares/authenticationMiddleware.js';
  *           schema:
  *             type: object
  *             required:
+ *               - run
+ *               - username
+ *               - firstName
+ *               - lastName
  *               - email
  *               - password
- *               - name
+ *               - password
  *             properties:
- *               name:
+ *               run:
+ *                 type: string
+ *               username:
+ *                 type: string
+ *               firstName:
+ *                 type: string
+ *               lastName:
  *                 type: string
  *               email:
  *                 type: string
  *               password:
  *                 type: string
- *               photoProfile:
+ *               password2:
  *                 type: string
- *                 format: binary
+ *
  *     responses:
  *       201:
  *         description: Usuario registrado exitosamente

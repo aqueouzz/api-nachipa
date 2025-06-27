@@ -43,10 +43,13 @@ const router = Router();
  *             properties:
  *               name:
  *                 type: string
- *                 example: Administrador
+ *                 example: Segundo de maquina
  *               description:
  *                 type: string
- *                 example: Tiene acceso completo al sistema
+ *                 example: trabaja en ronia
+ *               state:
+ *                 type: boolean
+ *                 example: false
  *     responses:
  *       201:
  *         description: Rol creado exitosamente

@@ -59,6 +59,10 @@ const businessSchema = new mongoose.Schema(
       maxlength: 12,
     },
     description: { type: String, trim: true },
+    state: {
+      type: Boolean,
+      default: true,
+    },
     createdBy: {
       type: mongoose.Types.ObjectId,
       ref: 'User',

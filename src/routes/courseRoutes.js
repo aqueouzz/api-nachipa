@@ -44,18 +44,21 @@ const router = Router();
  *               - title
  *               - description
  *             properties:
- *               title:
+ *               courseID:
  *                 type: string
- *                 example: Introducción a Node.js
+ *                 example: 232546787b
+ *               name:
+ *                 type: string
+ *                 example: Curso OMI
  *               description:
  *                 type: string
- *                 example: Curso básico para aprender Node.js
- *               duration:
- *                 type: number
- *                 example: 30
- *               level:
+ *                 example: se creo en enero
+ *               dictoCourse:
  *                 type: string
- *                 example: Principiante
+ *                 example: Marinos
+ *               state:
+ *                 type: boolean
+ *                 example: false
  *     responses:
  *       201:
  *         description: Curso creado exitosamente

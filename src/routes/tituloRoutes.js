@@ -41,16 +41,18 @@ const router = Router();
  *           schema:
  *             type: object
  *             properties:
- *               nombre:
+ *               institution:
+ *                 type: string
+ *                 example: Universidad Nacional de chile
+ *               name:
  *                 type: string
  *                 example: Ingeniero de Software
- *               institucion:
+ *               description:
  *                 type: string
- *                 example: Universidad Nacional
- *               fechaEmision:
- *                 type: string
- *                 format: date
- *                 example: 2020-12-10
+ *                 example: se realizo 2020-12-10
+ *               state:
+ *                 type: boolean
+ *                 example: true
  *     responses:
  *       201:
  *         description: Título creado exitosamente

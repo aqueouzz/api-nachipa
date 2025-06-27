@@ -43,18 +43,18 @@ const router = Router();
  *           schema:
  *             type: object
  *             properties:
- *               direccion:
+ *               businessID:
  *                 type: string
- *                 example: Calle Falsa 123
- *               ciudad:
+ *                 example: safdrrt43
+ *               name:
  *                 type: string
- *                 example: Lima
- *               departamento:
+ *                 example: Ronia polaris
+ *               description:
  *                 type: string
- *                 example: Lima Metropolitana
- *               pais:
- *                 type: string
- *                 example: Perú
+ *                 example: flota barco
+ *               state:
+ *                 type: boolean
+ *                 example: false
  *     responses:
  *       201:
  *         description: Ubicación creada exitosamente

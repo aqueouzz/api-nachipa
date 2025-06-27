@@ -19,6 +19,8 @@ data/
 volumes/
 
 # Documentos que no necesitas subir
+.vscode
+logs
 BIBLIADEV.md
 diagrama.excalidraw
 

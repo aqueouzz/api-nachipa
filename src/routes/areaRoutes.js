@@ -51,12 +51,21 @@ const router = Router();
  *           schema:
  *             type: object
  *             properties:
+ *               ubicationID:
+ *                  type : string
+ *                  example : Ronia polaris
+ *                  required: true
  *               name:
  *                 type: string
- *                 example: Recursos Humanos
+ *                 example: Sala de maquinas
  *               description:
  *                 type: string
- *                 example: Departamento encargado de personal
+ *                 example: personal
+ *               state:
+ *                  type: boolean
+ *                  example: true
+ *               createdBy:
+ *                  type: string
  *     responses:
  *       201:
  *         description: Área creada exitosamente

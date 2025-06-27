@@ -56,18 +56,39 @@ const router = Router();
  *             required:
  *               - name
  *             properties:
+ *               rut:
+ *                 type: string
+ *                 example: 76898743-4
  *               name:
  *                 type: string
- *                 example: Empresa XYZ
- *               address:
+ *                 example: Nachipa wellboats
+ *               giro:
  *                 type: string
- *                 example: Calle 123, Ciudad
+ *                 example: naviera
+ *               commune:
+ *                 type: string
+ *                 example: los lagos
+ *               city:
+ *                 type: string
+ *                 example: Puerto montt
+ *               country:
+ *                 type: string
+ *                 example: Chile
  *               phone:
  *                 type: string
- *                 example: +123456789
+ *                 example: 993838333
  *               email:
  *                 type: string
- *                 example: contacto@empresa.com
+ *                 example: contacto@nachipa-w.com
+ *               nameContact:
+ *                 type: string
+ *                 example: Rolando
+ *               description:
+ *                 type: string
+ *                 example: empresa nueva
+ *               state:
+ *                 type: boolean
+ *                 example: false
  *     responses:
  *       201:
  *         description: Empresa creada exitosamente
