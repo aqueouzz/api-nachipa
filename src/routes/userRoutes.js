@@ -8,6 +8,8 @@ import User from '../models/User.js';
 import Business from '../models/Business.js';
 import Ubication from '../models/Ubication.js';
 import Rol from '../models/Rol.js';
+import Area from '../models/Area.js';
+import Titulo from '../models/Titulo.js';
 
 import {
   getAllUsers,
@@ -61,7 +63,7 @@ router
 router.route('/:id').get(
   validateObjectIdsAndExistence([
     { field: 'id', model: User, location: 'body' },
-    { field: 'businessID', model: Business, location: 'body' },
+    { field: 'businessID', model: Business, location: 'params' },
   ]),
   authorizeAction('read_own', 'user'),
   getById
@@ -97,19 +99,40 @@ router.route('/:id').get(
  *       200:
  *         description: Usuario actualizado exitosamente
  */
+// routes/userRoute.js (o donde tengas el PATCH de updateUser)
 router
   .route('/')
   .all(authenticateToken)
   .patch(
     multer.single('photoProfile'),
     validateObjectIdsAndExistence([
-      { field: 'id', model: User, location: 'body' },
-      { field: 'businessID', model: Business, location: 'body' },
-      { field: 'ubicationID', model: Ubication, location: 'body' },
-      { field: 'rolID', model: Rol, location: 'body' },
+      { field: 'id', model: User, location: 'body', required: true },
+      // 👇 solo obligatorios si NO es superadmin
+      {
+        field: 'businessID',
+        model: Business,
+        location: 'body',
+        required: (req) => !req.user.isSuperadmin,
+      },
+      {
+        field: 'ubicationID',
+        model: Ubication,
+        location: 'body',
+        required: (req) => !req.user.isSuperadmin,
+      },
+      {
+        field: 'rolID',
+        model: Rol,
+        location: 'body',
+        required: (req) => !req.user.isSuperadmin,
+      },
+      // Si manejas área/título, idem:
+      // { field: 'areaID', model: Area, location: 'body', required: (req) => !req.user.isSuperadmin },
+      // { field: 'professionalDegreeID', model: Degree, location: 'body', required: (req) => !req.user.isSuperadmin },
     ]),
     updateUser
   );
+
 /**
  * @swagger
  * /user/{id}:
@@ -134,7 +157,7 @@ router
   .delete(
     authenticateToken,
     validateObjectIdsAndExistence([
-      { field: 'id', model: User, location: 'body' },
+      { field: 'id', model: User, location: 'params' },
     ]),
     authorizeAction('delete', 'user'),
     deleteUser

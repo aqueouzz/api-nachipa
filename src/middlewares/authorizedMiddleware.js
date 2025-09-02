@@ -18,7 +18,7 @@ export const authorizeAction = (action, model) => {
 
     const role = req.user?.role;
 
-    // console.log(role);
+    console.log(role);
 
     if (!role) {
       throw new ForbiddenError('Rol no definido!');

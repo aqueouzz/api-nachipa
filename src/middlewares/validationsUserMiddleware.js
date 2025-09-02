@@ -106,80 +106,44 @@ export const validateBodyObjectIds =
 //   };
 // };
 
-export const validateObjectIdsAndExistence = (fieldsWithModels = []) => {
+// middlewares/validationsUserMiddleware.js
+
+export const validateObjectIdsAndExistence = (fields = []) => {
   return async (req, res, next) => {
     try {
-      for (const {
-        field,
-        model,
-        location = 'body',
-        required = true,
-      } of fieldsWithModels) {
-        const value =
-          location === 'params'
-            ? req.params[field]
-            : location === 'query'
-              ? req.query[field]
-              : location === 'user'
-                ? req.user?.[field]
-                : req.body[field]; // por defecto body
+      for (const cfg of fields) {
+        const {
+          field,
+          model,
+          location = 'body',
+          required = true, // puede ser boolean o (req)=>boolean
+        } = cfg;
 
-        // console.log('>> Validando businessID desde req.user');
-        // console.log('Valor:', value);
-        // console.log('Tipo:', typeof value);
-        // console.log(location);
+        const isRequired =
+          typeof required === 'function' ? required(req) : !!required;
 
-        // const exists = await model.findById(value);
-        // console.log('Existe?:', exists);
+        const container = location === 'params' ? req.params : req.body;
+        const value = container?.[field];
 
-        // console.log(model.modelName);
-
-        // Si es requerido y no viene
-        // if (required && !value) {
-        //   return res.status(StatusCodes.BAD_REQUEST).json({
-        //     msg: `El campo '${field}' es requerido en ${location}`,
-        //   });
-        // }
-
-        // Si es requerido y no viene
-        if (
-          required &&
-          Object.prototype.hasOwnProperty.call(location, field) &&
-          !value
-        ) {
-          return res.status(StatusCodes.BAD_REQUEST).json({
-            msg: `El campo '${field}' es requerido en ${location}`,
-          });
-        }
-
-        // Si viene pero no es un ObjectId válido
-        if (value && !mongoose.Types.ObjectId.isValid(value)) {
-          return res.status(StatusCodes.BAD_REQUEST).json({
-            msg: `El valor del campo '${field}' no es un ObjectId válido`,
-          });
-        }
-
-        // Si es válido, buscar el documento
-        if (value) {
-          const doc = await model.findById(value);
-          if (!doc) {
-            return res.status(StatusCodes.NOT_FOUND).json({
-              msg: `No se encontró el ${field} documento en '${model.modelName}'`,
-            });
+        // Si no viene el campo
+        if (value === undefined || value === null || value === '') {
+          if (isRequired) {
+            throw new BadRequestError(`${field} es requerido`);
           }
-
-          // Guardamos el doc encontrado con nombre como `userDoc`, `businessDoc`, etc.
-          const camelField = `${field.replace('ID', '').replace('Id', '')}Doc`;
-          req[camelField] = doc;
+          continue; // opcional → no validamos nada más
         }
+
+        if (!mongoose.Types.ObjectId.isValid(value)) {
+          throw new BadRequestError(`${field} no es un ObjectId válido`);
+        }
+
+        const exists = await model.exists({ _id: value });
+        if (!exists) throw new BadRequestError(`${field} no existe`);
       }
 
       next();
     } catch (err) {
-      console.error('Error en middleware validateObjectIdsAndExistence:', err);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        msg: 'Error interno del servidor al validar los ObjectIds.',
-      });
+      next(err);
     }
   };
 };

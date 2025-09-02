@@ -36,11 +36,19 @@ import './tasks/cronWorker.js';
 import swagger from './config/swagger.js';
 
 // Setting cors
-const allowedOrigins = ['http://localhost:4500'];
+const allowedOrigins = [
+  'http://localhost:3000', // 👈 React dev server
+  'http://localhost:5173', // 👈 Vite dev server
+  'http://localhost:4500', // 👈 Tu backend
+  'http://127.0.0.1:3000', // 👈 Alternativa localhost
+  'http://127.0.0.1:5173', // 👈 Alternativa localhost
+];
+
 app.use(
   cors({
     origin: allowedOrigins,
     credentials: true,
+    // allowedHeaders: ['Content-Type', 'Authorization'], // 👈 clave
   })
 );
 

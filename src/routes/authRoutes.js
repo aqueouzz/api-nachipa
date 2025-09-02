@@ -8,6 +8,7 @@ import {
   forgotPassword,
   newPassword,
   signout,
+  gateRegister,
 } from '../controllers/authController.js';
 
 import { validateRegisterInput } from '../middlewares/validationRegisterUserMiddleware.js';
@@ -183,7 +184,7 @@ import { authenticateToken } from '../middlewares/authenticationMiddleware.js';
 router
   .route('/register')
   .post(
-    authenticateToken,
+    gateRegister,
     authorizeAction('create', 'user'),
     upload.single('photoProfile'),
     validateRegisterInput,

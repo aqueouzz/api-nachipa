@@ -46,8 +46,10 @@ export const getById = async (req, res) => {
 };
 
 // 🚀 : Get All Business
-export const getAllBusiness = async (req, res) => {
+export const getAllBusiness = async (req, res, next) => {
   const { q, order, status, startDate, endDate } = req.query;
+
+  // authorizedMiddleware.js
 
   const { page, limit, skip } = validatePaginationParams(req.query);
 

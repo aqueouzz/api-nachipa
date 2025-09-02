@@ -6,7 +6,8 @@ import path from 'path';
 // Importar modelos
 import User from '../models/User.js';
 import logger from '../utils/logger.js';
-
+import { authenticateToken } from '../middlewares/authenticationMiddleware.js';
+import { authorizeAction } from '../middlewares/authorizedMiddleware.js';
 // Utils
 import { emailRegister, resetPassword } from '../utils/email.js';
 
@@ -14,8 +15,21 @@ import { emailRegister, resetPassword } from '../utils/email.js';
 import {
   UnauthenticatedError,
   BadRequestError,
+  ForbiddenError,
 } from '../error/errorResponse.js';
 
+export const gateRegister = async (req, res, next) => {
+  const count = await User.countDocuments();
+  if (count === 0) {
+    // primer usuario: NO pedir token ni permisos
+    return next();
+  }
+  // ya hay usuarios → ahora sí exigimos token + permisos
+  return authenticateToken(req, res, (err) => {
+    if (err) return next(err);
+    return authorizeAction('create', 'user')(req, res, next);
+  });
+};
 //🚀 : Create a new user
 export const registerUser = async (req, res, next) => {
   const totalUsers = await User.countDocuments();
@@ -23,11 +37,14 @@ export const registerUser = async (req, res, next) => {
   // Si no hay usuarios, se permite omitir "createdBy"
   const isFirstUser = totalUsers === 0;
 
-  // ✅ : Validar que solo el superadmin pueda crear usuarios
-  if (!isFirstUser && req.user.role !== 'superadmin') {
-    return res.status(StatusCodes.BAD_REQUEST).json({
-      msg: 'Solo el super sayayin puede crear usuarios',
-    });
+  // ✅ Si NO es el primer usuario, exigir auth y rol
+  if (!isFirstUser) {
+    if (!req.user) {
+      throw new UnauthenticatedError('Acceso no autorizado. Inicia sesión.');
+    }
+    if (req.user.role !== 'superadmin') {
+      throw new ForbiddenError('Solo el superadmin puede crear usuarios');
+    }
   }
 
   try {

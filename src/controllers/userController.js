@@ -118,126 +118,184 @@ export const getById = async (req, res) => {
 };
 
 // 🚀 : Metodo UPDATE
-export const updateUser = async (req, res) => {
-  // Obtenemos el ID de req.user que viene del login y guardado en el token
-  const requesterUser = req.user;
-  const user = await User.findById(req.body.id);
+// export const updateUser = async (req, res) => {
+//   // Obtenemos el ID de req.user que viene del login y guardado en el token
+//   const requesterUser = req.user;
+//   const user = await User.findById(req.body.id);
 
-  const isSelf = user.id === requesterUser.id;
-  const isAdmin = requesterUser.role === 'admin';
-  const isSuperAdmin = requesterUser.role === 'superadmin';
-  const sameBusiness = requesterUser.businessID === user.businessID.toString();
+//   const isSelf = user.id === requesterUser.id;
+//   const isAdmin = requesterUser.role === 'admin';
+//   const isSuperAdmin = requesterUser.role === 'superadmin';
+//   const sameBusiness = requesterUser.businessID === user.businessID.toString();
 
-  // Usario debe estar confirmado para poder actualizar
-  if (user.confirmed === false)
-    throw new BadRequestError(
-      'Usuario no puede actualizarse ya que no ha sido confirmado'
-    );
+//   // Usario debe estar confirmado para poder actualizar
+//   if (user.confirmed === false)
+//     throw new BadRequestError(
+//       'Usuario no puede actualizarse ya que no ha sido confirmado'
+//     );
 
-  // Si no existe el usuario, retornamos un error
-  if (!user)
-    res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ msg: 'Id de usuario no encontrado' });
+//   // Si no existe el usuario, retornamos un error
+//   if (!user)
+//     res
+//       .status(StatusCodes.BAD_REQUEST)
+//       .json({ msg: 'Id de usuario no encontrado' });
 
-  // ✅ : Validamos ROLES INTERNOS “Si NO soy yo mismo y NO soy superadmin ni admin de la misma empresa → entonces no tengo permisos”.
-  if (!isSelf && !(isSuperAdmin || (isAdmin && sameBusiness))) {
-    throw new ForbiddenError('No tiene permisos para actualizar este usuario!');
-  }
+//   // ✅ : Validamos ROLES INTERNOS “Si NO soy yo mismo y NO soy superadmin ni admin de la misma empresa → entonces no tengo permisos”.
+//   if (!isSelf && !(isSuperAdmin || (isAdmin && sameBusiness))) {
+//     throw new ForbiddenError('No tiene permisos para actualizar este usuario!');
+//   }
 
-  // Si quiere actualizar validamos que venga algun archivo y que venga el campo photoProfile para actualizar su foto de perfil y los campos que puede actualizar
-  if (req.file && user.photoProfile) {
-    const oldPhoto = path.join('src/uploads', path.basename(user.photoProfile));
-    console.log(oldPhoto);
-    // Antes de guardar la nueva imagen, el código elimina la imagen anterior si existe:
-    try {
-      // Verifica si el archivo existe intentando acceder a él
-      await fs.access(oldPhoto);
+//   // Si quiere actualizar validamos que venga algun archivo y que venga el campo photoProfile para actualizar su foto de perfil y los campos que puede actualizar
+//   if (req.file && user.photoProfile) {
+//     const oldPhoto = path.join('src/uploads', path.basename(user.photoProfile));
+//     console.log(oldPhoto);
+//     // Antes de guardar la nueva imagen, el código elimina la imagen anterior si existe:
+//     try {
+//       // Verifica si el archivo existe intentando acceder a él
+//       await fs.access(oldPhoto);
 
-      // Si no lanza error, el archivo existe, entonces lo borramos
-      await fs.unlink(oldPhoto);
-      // console.log('Foto de perfil eliminada correctamente');
-    } catch (err) {
-      // Si el error es porque no existe el archivo, lo ignoramos
-      if (err.code !== 'ENOENT') {
-        throw new ErrorResponse(
-          'Ha ocurrido un error al eliminar la foto de perfil anterior'
-        );
-      }
-    }
+//       // Si no lanza error, el archivo existe, entonces lo borramos
+//       await fs.unlink(oldPhoto);
+//       // console.log('Foto de perfil eliminada correctamente');
+//     } catch (err) {
+//       // Si el error es porque no existe el archivo, lo ignoramos
+//       if (err.code !== 'ENOENT') {
+//         throw new ErrorResponse(
+//           'Ha ocurrido un error al eliminar la foto de perfil anterior'
+//         );
+//       }
+//     }
 
-    if (req.file) {
-      // Crear nombre único de archivo
-      const uploadDir = path.join('src/uploads');
-      const extension = path.extname(req.file.originalname);
-      const filename = `${Date.now()}-${user.username}${extension}`;
-      const filePath = path.join(uploadDir, filename);
-      try {
-        await fs.mkdir(uploadDir, { recursive: true }); // No falla si ya existe
-      } catch (err) {
-        console.error('Error creando carpeta:', err);
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-          success: false,
-          message: 'Error al crear carpeta de subida.',
-        });
-      }
+//     if (req.file) {
+//       // Crear nombre único de archivo
+//       const uploadDir = path.join('src/uploads');
+//       const extension = path.extname(req.file.originalname);
+//       const filename = `${Date.now()}-${user.username}${extension}`;
+//       const filePath = path.join(uploadDir, filename);
+//       try {
+//         await fs.mkdir(uploadDir, { recursive: true }); // No falla si ya existe
+//       } catch (err) {
+//         console.error('Error creando carpeta:', err);
+//         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+//           success: false,
+//           message: 'Error al crear carpeta de subida.',
+//         });
+//       }
 
-      // Guardar el archivo desde el buffer en disco
-      try {
-        await fs.writeFile(filePath, req.file.buffer);
-        user.photoProfile = `/uploads/${filename}`;
-      } catch (err) {
-        console.error('Error al guardar archivo:', err);
-        return res
-          .status(StatusCodes.INTERNAL_SERVER_ERROR)
-          .json({ success: false, message: 'Error al guardar la imagen.' });
-      }
+//       // Guardar el archivo desde el buffer en disco
+//       try {
+//         await fs.writeFile(filePath, req.file.buffer);
+//         user.photoProfile = `/uploads/${filename}`;
+//       } catch (err) {
+//         console.error('Error al guardar archivo:', err);
+//         return res
+//           .status(StatusCodes.INTERNAL_SERVER_ERROR)
+//           .json({ success: false, message: 'Error al guardar la imagen.' });
+//       }
 
-      // Asignar path accesible públicamente
-      // Actualza la url de la imagen nueva
-      const photoUrl = `/uploads/${filename}`;
-      user.photoProfile = photoUrl;
-    }
-  }
+//       // Asignar path accesible públicamente
+//       // Actualza la url de la imagen nueva
+//       const photoUrl = `/uploads/${filename}`;
+//       user.photoProfile = photoUrl;
+//     }
+//   }
 
-  // Campos que solo el superadmin puede modificar
-  const camposSoloSuperadmin = [
-    'internalRol',
-    'rol',
-    'state',
+//   // Campos que solo el superadmin puede modificar
+//   const camposSoloSuperadmin = [
+//     'internalRol',
+//     'rol',
+//     'state',
+//     'username',
+//     'run',
+//     '_id',
+//     'token',
+//     'confirmed',
+//     'createdAt',
+//     'updatedAt',
+//     // 'lastName',
+//   ];
+
+//   // Si el usuario autenticado NO es superadmin, revisa si intenta modificar campos restringidos
+//   if (req.user.role !== 'superadmin') {
+//     for (const campo of camposSoloSuperadmin) {
+//       if (campo in req.body) {
+//         console.log(campo);
+//         return res.status(StatusCodes.FORBIDDEN).json({
+//           msg: `No tienes permisos para actualizar el campo: ${campo}`,
+//         });
+//       }
+//     }
+//   }
+
+//   // Recorre los campos que vienen en el body y los asigna al usuario
+//   Object.entries(req.body).forEach(([key, value]) => {
+//     user[key] = value;
+//   });
+
+//   user.updatedBy = requesterUser.id; // Actualiza el campo updatedBy con el ID del usuario que está haciendo la petición
+//   await user.save();
+
+//   res.status(StatusCodes.OK).json({
+//     success: true,
+//     msg: 'Usuario actualizado',
+//     data: user,
+//   });
+// };
+// controllers/userController.js (fragmento de updateUser)
+import mongoose from 'mongoose';
+
+export const updateUser = async (req, res, next) => {
+  const { id } = req.body;
+  const isSuper = req.user?.isSuperadmin;
+
+  console.log(req.role);
+
+  const allow = [
     'username',
     'run',
-    '_id',
-    'token',
-    'confirmed',
-    'createdAt',
-    'updatedAt',
-    // 'lastName',
+    'firstName',
+    'lastName',
+    'email',
+    'phone',
+    'direction',
+    'birthDate',
+    'photoProfile',
+    'professionalDegreeID',
   ];
+  const body = req.body || {};
+  const update = {};
 
-  // Si el usuario autenticado NO es superadmin, revisa si intenta modificar campos restringidos
-  if (req.user.role !== 'superadmin') {
-    for (const campo of camposSoloSuperadmin) {
-      if (campo in req.body) {
-        console.log(campo);
-        return res.status(StatusCodes.FORBIDDEN).json({
-          msg: `No tienes permisos para actualizar el campo: ${campo}`,
-        });
-      }
-    }
+  // Campos “simples”
+  for (const k of allow) if (body[k] !== undefined) update[k] = body[k];
+
+  // Mapeos desde UI
+  if (body.disponible !== undefined) update.state = !!body.disponible;
+  if (body.admin !== undefined) {
+    update.internalRol = body.admin
+      ? (req.user?.internalRol ?? '').toLowerCase() === 'superadmin'
+        ? 'superadmin'
+        : 'admin'
+      : 'user';
   }
 
-  // Recorre los campos que vienen en el body y los asigna al usuario
-  Object.entries(req.body).forEach(([key, value]) => {
-    user[key] = value;
+  // Empresa/área/rol/ubicación:
+  const ids = ['businessID', 'ubicationID', 'rolID', 'areaID'];
+  for (const k of ids) {
+    const val = body[k];
+    if (val === undefined || val === '') continue;
+    // superadmin: sólo setea si es un ObjectId válido (si no, ignora)
+    if (mongoose.Types.ObjectId.isValid(val)) update[k] = val;
+    else if (!isSuper)
+      return res.status(400).json({ message: `${k} no es válido` });
+  }
+
+  const user = await User.findByIdAndUpdate(id, update, {
+    new: true,
+    runValidators: false,
   });
-
-  user.updatedBy = requesterUser.id; // Actualiza el campo updatedBy con el ID del usuario que está haciendo la petición
-  await user.save();
-
-  res.status(StatusCodes.OK).json({
+  return res.json({
     success: true,
-    msg: 'Usuario actualizado',
+    message: 'Usuario actualizado',
     data: user,
   });
 };
